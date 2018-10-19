@@ -46,7 +46,7 @@ def p_declaracao_de_variavel(p):
     nome = p[2]
     _, valor = p[4]
 
-    symbol_table[nome] = Node(tipo, valor)
+    symbol_table[nome] = Node(tipo, tipo(valor))
 
 def p_operacao(p):
     '''

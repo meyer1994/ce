@@ -11,4 +11,25 @@ class TestSymbolTable(TestCase):
         self.assertIn('a', symbol_table)
 
         expected = Node(type(0), 1)
-        self.assertEqual(symbol_table['a'], expected)
+        result = symbol_table['a']
+        self.assertEqual(result, expected)
+
+    def test_operacao(self):
+        ''' Math operations are performed '''
+        data = 'curto a = 1 + 2;'
+        parser.parse(data)
+        self.assertIn('a', symbol_table)
+
+        expected = 3
+        _, result = symbol_table['a']
+        self.assertEqual(result, expected)
+
+    def test_float_truncate(self):
+        ''' Floating point assigned to int variable is truncated '''
+        data = 'curto a = 1 + 2.4;'
+        parser.parse(data)
+        self.assertIn('a', symbol_table)
+
+        expected = 3
+        _, result = symbol_table['a']
+        self.assertEqual(result, expected)

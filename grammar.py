@@ -40,7 +40,13 @@ def p_declaracao_de_variavel(p):
     '''
     tipo = p[1]
     nome = p[2]
-    valor = p[4]
+    op_tipo, op_valor = p[4]
+
+    if tipo == 'curto':
+        valor = int(op_valor)
+    elif tipo == 'flutua':
+        valor = float(op_valor)
+
     symbol_table[nome] = (tipo, valor)
 
 def p_operacao(p):
@@ -54,7 +60,7 @@ def p_operacao(p):
              | operacao '^' operacao
              | operacao '|' operacao
     '''
-    operations = {
+    operacoes = {
         '*': lambda a, b: a * b,
         '/': lambda a, b: a / b,
         '%': lambda a, b: a % b,
@@ -64,17 +70,24 @@ def p_operacao(p):
         '^': lambda a, b: a ^ b,
         '|': lambda a, b: a | b
     }
-    op = p[2]
-    operation = operations[op]
-    a = p[1]
-    b = p[3]
-    p[0] = operation(a, b)
+    operacao = operacoes[p[2]]
+    a_tipo, a_valor = p[1]
+    b_tipo, b_valor = p[3]
+
+    if 'flutua' in (a_tipo, b_tipo):
+        tipo = 'flutua'
+    else:
+        tipo = 'curto'
+
+    valor = operacao(a_valor, b_valor)
+    p[0] = (tipo, valor)
 
 def p_operacao_minus(p):
     '''
     operacao : '-' operacao %prec UMINUS
     '''
-    p[0] = -p[2]
+    tipo, valor = p[2]
+    p[0] = (tipo, -valor)
 
 def p_operacao_literal(p):
     '''
@@ -87,8 +100,7 @@ def p_operacao_variavel(p):
     operacao : ID
     '''
     nome = p[1]
-    _, valor = symbol_table[nome]
-    p[0] = valor
+    p[0] = symbol_table[nome]
 
 def p_operacao_parenteses(p):
     '''

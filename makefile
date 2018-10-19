@@ -1,3 +1,3 @@
 
 clean:
-	rm -vf parser.out parsetab.py
+	rm -vf ce/parser.out ce/parsetab.py

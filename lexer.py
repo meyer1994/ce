@@ -18,14 +18,16 @@ literals = string.printable
 
 def t_LITERAL_FLUTUA(t):
     r'\d+\.\d+'
-    val = t.value
-    t.value = float(val)
+    valor = float(t.value)
+    tipo = 'flutua'
+    t.value = (tipo, valor)
     return t
 
 def t_LITERAL_CURTO(t):
     r'\d+'
-    val = t.value
-    t.value = int(val)
+    valor = int(t.value)
+    tipo = 'curto'
+    t.value = (tipo, valor)
     return t
 
 def t_ID(t):

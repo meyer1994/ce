@@ -90,6 +90,11 @@ def p_operacao_variavel(p):
     _, valor = symbol_table[nome]
     p[0] = valor
 
+def p_operacao_parenteses(p):
+    '''
+    operacao : '(' operacao ')'
+    '''
+    p[0] = p[2]
 
 def p_TIPO(p):
     '''

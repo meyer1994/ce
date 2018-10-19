@@ -1,11 +1,13 @@
+from collections import namedtuple
 
 import ply.yacc as yacc
 
-from lexer import tokens, literals
+from ce.lexer import tokens, literals
 
+
+Node = namedtuple('Node', ('tipo', 'valor'))
 
 symbol_table = {}
-
 
 precedence = [
     ('left', '&', '|', '^'),
@@ -15,6 +17,8 @@ precedence = [
 ]
 
 start = 'comandos'
+
+
 
 def p_empty(p):
     '''
@@ -40,14 +44,9 @@ def p_declaracao_de_variavel(p):
     '''
     tipo = p[1]
     nome = p[2]
-    op_tipo, op_valor = p[4]
+    _, valor = p[4]
 
-    if tipo == 'curto':
-        valor = int(op_valor)
-    elif tipo == 'flutua':
-        valor = float(op_valor)
-
-    symbol_table[nome] = (tipo, valor)
+    symbol_table[nome] = Node(tipo, valor)
 
 def p_operacao(p):
     '''
@@ -74,20 +73,16 @@ def p_operacao(p):
     a_tipo, a_valor = p[1]
     b_tipo, b_valor = p[3]
 
-    if 'flutua' in (a_tipo, b_tipo):
-        tipo = 'flutua'
-    else:
-        tipo = 'curto'
-
     valor = operacao(a_valor, b_valor)
-    p[0] = (tipo, valor)
+    tipo = type(valor)
+    p[0] = Node(tipo, valor)
 
 def p_operacao_minus(p):
     '''
     operacao : '-' operacao %prec UMINUS
     '''
     tipo, valor = p[2]
-    p[0] = (tipo, -valor)
+    p[0] = Node(tipo, -valor)
 
 def p_operacao_literal(p):
     '''
@@ -113,17 +108,23 @@ def p_TIPO(p):
     TIPO : TIPO_CURTO
          | TIPO_FLUTUA
     '''
-    p[0] = p[1]
+    tipos = {
+        'curto': type(0),
+        'flutua': type(0.0)
+    }
+    p[0] = tipos[p[1]]
 
 def p_LITERAL(p):
     '''
     LITERAL : LITERAL_CURTO
             | LITERAL_FLUTUA
     '''
-    p[0] = p[1]
+    valor = p[1]
+    tipo = type(valor)
+    p[0] = Node(tipo, valor)
 
 def p_error(p):
-    print(f'Error at line {p}')
+    print('Error at line %s' % p)
 
 parser = yacc.yacc(debug=True)
 
@@ -139,4 +140,4 @@ if __name__ == '__main__':
 
     with open(args.file, 'r') as f:
         data = f.read()
-    parser.parse(data)
+        parser.parse(data)

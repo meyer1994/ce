@@ -1,0 +1,560 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> comando
+Rule 1     comando -> operacao
+Rule 2     operacao -> operacao * operacao
+Rule 3     operacao -> operacao / operacao
+Rule 4     operacao -> operacao % operacao
+Rule 5     operacao -> operacao + operacao
+Rule 6     operacao -> operacao - operacao
+Rule 7     operacao -> operacao & operacao
+Rule 8     operacao -> operacao ^ operacao
+Rule 9     operacao -> operacao | operacao
+Rule 10    operacao -> - operacao
+Rule 11    operacao -> NUM
+
+Terminals, with rules where they appear
+
+%                    : 4
+&                    : 7
+*                    : 2
++                    : 5
+-                    : 6 10
+/                    : 3
+NUM                  : 11
+^                    : 8
+error                : 
+|                    : 9
+
+Nonterminals, with rules where they appear
+
+comando              : 0
+operacao             : 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 10
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . comando
+    (1) comando -> . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    comando                        shift and go to state 1
+    operacao                       shift and go to state 2
+
+state 1
+
+    (0) S' -> comando .
+
+
+
+state 2
+
+    (1) comando -> operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    $end            reduce using rule 1 (comando -> operacao .)
+    *               shift and go to state 5
+    /               shift and go to state 6
+    %               shift and go to state 7
+    +               shift and go to state 8
+    -               shift and go to state 9
+    &               shift and go to state 10
+    ^               shift and go to state 11
+    |               shift and go to state 12
+
+
+state 3
+
+    (10) operacao -> - . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 13
+
+state 4
+
+    (11) operacao -> NUM .
+
+    *               reduce using rule 11 (operacao -> NUM .)
+    /               reduce using rule 11 (operacao -> NUM .)
+    %               reduce using rule 11 (operacao -> NUM .)
+    +               reduce using rule 11 (operacao -> NUM .)
+    -               reduce using rule 11 (operacao -> NUM .)
+    &               reduce using rule 11 (operacao -> NUM .)
+    ^               reduce using rule 11 (operacao -> NUM .)
+    |               reduce using rule 11 (operacao -> NUM .)
+    $end            reduce using rule 11 (operacao -> NUM .)
+
+
+state 5
+
+    (2) operacao -> operacao * . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 14
+
+state 6
+
+    (3) operacao -> operacao / . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 15
+
+state 7
+
+    (4) operacao -> operacao % . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 16
+
+state 8
+
+    (5) operacao -> operacao + . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 17
+
+state 9
+
+    (6) operacao -> operacao - . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 18
+
+state 10
+
+    (7) operacao -> operacao & . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 19
+
+state 11
+
+    (8) operacao -> operacao ^ . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 20
+
+state 12
+
+    (9) operacao -> operacao | . operacao
+    (2) operacao -> . operacao * operacao
+    (3) operacao -> . operacao / operacao
+    (4) operacao -> . operacao % operacao
+    (5) operacao -> . operacao + operacao
+    (6) operacao -> . operacao - operacao
+    (7) operacao -> . operacao & operacao
+    (8) operacao -> . operacao ^ operacao
+    (9) operacao -> . operacao | operacao
+    (10) operacao -> . - operacao
+    (11) operacao -> . NUM
+
+    -               shift and go to state 3
+    NUM             shift and go to state 4
+
+    operacao                       shift and go to state 21
+
+state 13
+
+    (10) operacao -> - operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    *               reduce using rule 10 (operacao -> - operacao .)
+    /               reduce using rule 10 (operacao -> - operacao .)
+    %               reduce using rule 10 (operacao -> - operacao .)
+    +               reduce using rule 10 (operacao -> - operacao .)
+    -               reduce using rule 10 (operacao -> - operacao .)
+    &               reduce using rule 10 (operacao -> - operacao .)
+    ^               reduce using rule 10 (operacao -> - operacao .)
+    |               reduce using rule 10 (operacao -> - operacao .)
+    $end            reduce using rule 10 (operacao -> - operacao .)
+
+  ! *               [ shift and go to state 5 ]
+  ! /               [ shift and go to state 6 ]
+  ! %               [ shift and go to state 7 ]
+  ! +               [ shift and go to state 8 ]
+  ! -               [ shift and go to state 9 ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 14
+
+    (2) operacao -> operacao * operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    *               reduce using rule 2 (operacao -> operacao * operacao .)
+    /               reduce using rule 2 (operacao -> operacao * operacao .)
+    %               reduce using rule 2 (operacao -> operacao * operacao .)
+    +               reduce using rule 2 (operacao -> operacao * operacao .)
+    -               reduce using rule 2 (operacao -> operacao * operacao .)
+    &               reduce using rule 2 (operacao -> operacao * operacao .)
+    ^               reduce using rule 2 (operacao -> operacao * operacao .)
+    |               reduce using rule 2 (operacao -> operacao * operacao .)
+    $end            reduce using rule 2 (operacao -> operacao * operacao .)
+
+  ! *               [ shift and go to state 5 ]
+  ! /               [ shift and go to state 6 ]
+  ! %               [ shift and go to state 7 ]
+  ! +               [ shift and go to state 8 ]
+  ! -               [ shift and go to state 9 ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 15
+
+    (3) operacao -> operacao / operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    *               reduce using rule 3 (operacao -> operacao / operacao .)
+    /               reduce using rule 3 (operacao -> operacao / operacao .)
+    %               reduce using rule 3 (operacao -> operacao / operacao .)
+    +               reduce using rule 3 (operacao -> operacao / operacao .)
+    -               reduce using rule 3 (operacao -> operacao / operacao .)
+    &               reduce using rule 3 (operacao -> operacao / operacao .)
+    ^               reduce using rule 3 (operacao -> operacao / operacao .)
+    |               reduce using rule 3 (operacao -> operacao / operacao .)
+    $end            reduce using rule 3 (operacao -> operacao / operacao .)
+
+  ! *               [ shift and go to state 5 ]
+  ! /               [ shift and go to state 6 ]
+  ! %               [ shift and go to state 7 ]
+  ! +               [ shift and go to state 8 ]
+  ! -               [ shift and go to state 9 ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 16
+
+    (4) operacao -> operacao % operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    *               reduce using rule 4 (operacao -> operacao % operacao .)
+    /               reduce using rule 4 (operacao -> operacao % operacao .)
+    %               reduce using rule 4 (operacao -> operacao % operacao .)
+    +               reduce using rule 4 (operacao -> operacao % operacao .)
+    -               reduce using rule 4 (operacao -> operacao % operacao .)
+    &               reduce using rule 4 (operacao -> operacao % operacao .)
+    ^               reduce using rule 4 (operacao -> operacao % operacao .)
+    |               reduce using rule 4 (operacao -> operacao % operacao .)
+    $end            reduce using rule 4 (operacao -> operacao % operacao .)
+
+  ! *               [ shift and go to state 5 ]
+  ! /               [ shift and go to state 6 ]
+  ! %               [ shift and go to state 7 ]
+  ! +               [ shift and go to state 8 ]
+  ! -               [ shift and go to state 9 ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 17
+
+    (5) operacao -> operacao + operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    +               reduce using rule 5 (operacao -> operacao + operacao .)
+    -               reduce using rule 5 (operacao -> operacao + operacao .)
+    &               reduce using rule 5 (operacao -> operacao + operacao .)
+    ^               reduce using rule 5 (operacao -> operacao + operacao .)
+    |               reduce using rule 5 (operacao -> operacao + operacao .)
+    $end            reduce using rule 5 (operacao -> operacao + operacao .)
+    *               shift and go to state 5
+    /               shift and go to state 6
+    %               shift and go to state 7
+
+  ! *               [ reduce using rule 5 (operacao -> operacao + operacao .) ]
+  ! /               [ reduce using rule 5 (operacao -> operacao + operacao .) ]
+  ! %               [ reduce using rule 5 (operacao -> operacao + operacao .) ]
+  ! +               [ shift and go to state 8 ]
+  ! -               [ shift and go to state 9 ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 18
+
+    (6) operacao -> operacao - operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    +               reduce using rule 6 (operacao -> operacao - operacao .)
+    -               reduce using rule 6 (operacao -> operacao - operacao .)
+    &               reduce using rule 6 (operacao -> operacao - operacao .)
+    ^               reduce using rule 6 (operacao -> operacao - operacao .)
+    |               reduce using rule 6 (operacao -> operacao - operacao .)
+    $end            reduce using rule 6 (operacao -> operacao - operacao .)
+    *               shift and go to state 5
+    /               shift and go to state 6
+    %               shift and go to state 7
+
+  ! *               [ reduce using rule 6 (operacao -> operacao - operacao .) ]
+  ! /               [ reduce using rule 6 (operacao -> operacao - operacao .) ]
+  ! %               [ reduce using rule 6 (operacao -> operacao - operacao .) ]
+  ! +               [ shift and go to state 8 ]
+  ! -               [ shift and go to state 9 ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 19
+
+    (7) operacao -> operacao & operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    &               reduce using rule 7 (operacao -> operacao & operacao .)
+    ^               reduce using rule 7 (operacao -> operacao & operacao .)
+    |               reduce using rule 7 (operacao -> operacao & operacao .)
+    $end            reduce using rule 7 (operacao -> operacao & operacao .)
+    *               shift and go to state 5
+    /               shift and go to state 6
+    %               shift and go to state 7
+    +               shift and go to state 8
+    -               shift and go to state 9
+
+  ! *               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
+  ! /               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
+  ! %               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
+  ! +               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
+  ! -               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 20
+
+    (8) operacao -> operacao ^ operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    &               reduce using rule 8 (operacao -> operacao ^ operacao .)
+    ^               reduce using rule 8 (operacao -> operacao ^ operacao .)
+    |               reduce using rule 8 (operacao -> operacao ^ operacao .)
+    $end            reduce using rule 8 (operacao -> operacao ^ operacao .)
+    *               shift and go to state 5
+    /               shift and go to state 6
+    %               shift and go to state 7
+    +               shift and go to state 8
+    -               shift and go to state 9
+
+  ! *               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
+  ! /               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
+  ! %               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
+  ! +               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
+  ! -               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+
+
+state 21
+
+    (9) operacao -> operacao | operacao .
+    (2) operacao -> operacao . * operacao
+    (3) operacao -> operacao . / operacao
+    (4) operacao -> operacao . % operacao
+    (5) operacao -> operacao . + operacao
+    (6) operacao -> operacao . - operacao
+    (7) operacao -> operacao . & operacao
+    (8) operacao -> operacao . ^ operacao
+    (9) operacao -> operacao . | operacao
+
+    &               reduce using rule 9 (operacao -> operacao | operacao .)
+    ^               reduce using rule 9 (operacao -> operacao | operacao .)
+    |               reduce using rule 9 (operacao -> operacao | operacao .)
+    $end            reduce using rule 9 (operacao -> operacao | operacao .)
+    *               shift and go to state 5
+    /               shift and go to state 6
+    %               shift and go to state 7
+    +               shift and go to state 8
+    -               shift and go to state 9
+
+  ! *               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
+  ! /               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
+  ! %               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
+  ! +               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
+  ! -               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
+  ! &               [ shift and go to state 10 ]
+  ! ^               [ shift and go to state 11 ]
+  ! |               [ shift and go to state 12 ]
+

@@ -2,559 +2,841 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Grammar
 
-Rule 0     S' -> comando
-Rule 1     comando -> operacao
-Rule 2     operacao -> operacao * operacao
-Rule 3     operacao -> operacao / operacao
-Rule 4     operacao -> operacao % operacao
-Rule 5     operacao -> operacao + operacao
-Rule 6     operacao -> operacao - operacao
-Rule 7     operacao -> operacao & operacao
-Rule 8     operacao -> operacao ^ operacao
-Rule 9     operacao -> operacao | operacao
-Rule 10    operacao -> - operacao
-Rule 11    operacao -> NUM
+Rule 0     S' -> comandos
+Rule 1     empty -> <empty>
+Rule 2     comandos -> comandos comando
+Rule 3     comandos -> empty
+Rule 4     comando -> declaracao_de_variavel ;
+Rule 5     comando -> operacao ;
+Rule 6     declaracao_de_variavel -> TIPO ID = operacao
+Rule 7     operacao -> operacao * operacao
+Rule 8     operacao -> operacao / operacao
+Rule 9     operacao -> operacao % operacao
+Rule 10    operacao -> operacao + operacao
+Rule 11    operacao -> operacao - operacao
+Rule 12    operacao -> operacao & operacao
+Rule 13    operacao -> operacao ^ operacao
+Rule 14    operacao -> operacao | operacao
+Rule 15    operacao -> - operacao
+Rule 16    operacao -> LITERAL
+Rule 17    operacao -> ID
+Rule 18    TIPO -> TIPO_CURTO
+Rule 19    TIPO -> TIPO_FLUTUA
+Rule 20    LITERAL -> LITERAL_CURTO
+Rule 21    LITERAL -> LITERAL_FLUTUA
 
 Terminals, with rules where they appear
 
-%                    : 4
-&                    : 7
-*                    : 2
-+                    : 5
--                    : 6 10
-/                    : 3
-NUM                  : 11
-^                    : 8
+%                    : 9
+&                    : 12
+*                    : 7
++                    : 10
+-                    : 11 15
+/                    : 8
+;                    : 4 5
+=                    : 6
+ID                   : 6 17
+LITERAL_CURTO        : 20
+LITERAL_FLUTUA       : 21
+TIPO_CURTO           : 18
+TIPO_FLUTUA          : 19
+^                    : 13
 error                : 
-|                    : 9
+|                    : 14
 
 Nonterminals, with rules where they appear
 
-comando              : 0
-operacao             : 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 10
+LITERAL              : 16
+TIPO                 : 6
+comando              : 2
+comandos             : 2 0
+declaracao_de_variavel : 4
+empty                : 3
+operacao             : 5 6 7 7 8 8 9 9 10 10 11 11 12 12 13 13 14 14 15
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . comando
-    (1) comando -> . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (0) S' -> . comandos
+    (2) comandos -> . comandos comando
+    (3) comandos -> . empty
+    (1) empty -> .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    -               reduce using rule 1 (empty -> .)
+    ID              reduce using rule 1 (empty -> .)
+    TIPO_CURTO      reduce using rule 1 (empty -> .)
+    TIPO_FLUTUA     reduce using rule 1 (empty -> .)
+    LITERAL_CURTO   reduce using rule 1 (empty -> .)
+    LITERAL_FLUTUA  reduce using rule 1 (empty -> .)
+    $end            reduce using rule 1 (empty -> .)
 
-    comando                        shift and go to state 1
-    operacao                       shift and go to state 2
+    comandos                       shift and go to state 1
+    empty                          shift and go to state 2
 
 state 1
 
-    (0) S' -> comando .
+    (0) S' -> comandos .
+    (2) comandos -> comandos . comando
+    (4) comando -> . declaracao_de_variavel ;
+    (5) comando -> . operacao ;
+    (6) declaracao_de_variavel -> . TIPO ID = operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (18) TIPO -> . TIPO_CURTO
+    (19) TIPO -> . TIPO_FLUTUA
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    TIPO_CURTO      shift and go to state 10
+    TIPO_FLUTUA     shift and go to state 11
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
+    comando                        shift and go to state 3
+    declaracao_de_variavel         shift and go to state 4
+    operacao                       shift and go to state 5
+    TIPO                           shift and go to state 6
+    LITERAL                        shift and go to state 9
 
 state 2
 
-    (1) comando -> operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (3) comandos -> empty .
 
-    $end            reduce using rule 1 (comando -> operacao .)
-    *               shift and go to state 5
-    /               shift and go to state 6
-    %               shift and go to state 7
-    +               shift and go to state 8
-    -               shift and go to state 9
-    &               shift and go to state 10
-    ^               shift and go to state 11
-    |               shift and go to state 12
+    -               reduce using rule 3 (comandos -> empty .)
+    ID              reduce using rule 3 (comandos -> empty .)
+    TIPO_CURTO      reduce using rule 3 (comandos -> empty .)
+    TIPO_FLUTUA     reduce using rule 3 (comandos -> empty .)
+    LITERAL_CURTO   reduce using rule 3 (comandos -> empty .)
+    LITERAL_FLUTUA  reduce using rule 3 (comandos -> empty .)
+    $end            reduce using rule 3 (comandos -> empty .)
 
 
 state 3
 
-    (10) operacao -> - . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (2) comandos -> comandos comando .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    -               reduce using rule 2 (comandos -> comandos comando .)
+    ID              reduce using rule 2 (comandos -> comandos comando .)
+    TIPO_CURTO      reduce using rule 2 (comandos -> comandos comando .)
+    TIPO_FLUTUA     reduce using rule 2 (comandos -> comandos comando .)
+    LITERAL_CURTO   reduce using rule 2 (comandos -> comandos comando .)
+    LITERAL_FLUTUA  reduce using rule 2 (comandos -> comandos comando .)
+    $end            reduce using rule 2 (comandos -> comandos comando .)
 
-    operacao                       shift and go to state 13
 
 state 4
 
-    (11) operacao -> NUM .
+    (4) comando -> declaracao_de_variavel . ;
 
-    *               reduce using rule 11 (operacao -> NUM .)
-    /               reduce using rule 11 (operacao -> NUM .)
-    %               reduce using rule 11 (operacao -> NUM .)
-    +               reduce using rule 11 (operacao -> NUM .)
-    -               reduce using rule 11 (operacao -> NUM .)
-    &               reduce using rule 11 (operacao -> NUM .)
-    ^               reduce using rule 11 (operacao -> NUM .)
-    |               reduce using rule 11 (operacao -> NUM .)
-    $end            reduce using rule 11 (operacao -> NUM .)
+    ;               shift and go to state 14
 
 
 state 5
 
-    (2) operacao -> operacao * . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (5) comando -> operacao . ;
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ;               shift and go to state 15
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+    +               shift and go to state 19
+    -               shift and go to state 20
+    &               shift and go to state 21
+    ^               shift and go to state 22
+    |               shift and go to state 23
 
-    operacao                       shift and go to state 14
 
 state 6
 
-    (3) operacao -> operacao / . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (6) declaracao_de_variavel -> TIPO . ID = operacao
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ID              shift and go to state 24
 
-    operacao                       shift and go to state 15
 
 state 7
 
-    (4) operacao -> operacao % . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (17) operacao -> ID .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ;               reduce using rule 17 (operacao -> ID .)
+    *               reduce using rule 17 (operacao -> ID .)
+    /               reduce using rule 17 (operacao -> ID .)
+    %               reduce using rule 17 (operacao -> ID .)
+    +               reduce using rule 17 (operacao -> ID .)
+    -               reduce using rule 17 (operacao -> ID .)
+    &               reduce using rule 17 (operacao -> ID .)
+    ^               reduce using rule 17 (operacao -> ID .)
+    |               reduce using rule 17 (operacao -> ID .)
 
-    operacao                       shift and go to state 16
 
 state 8
 
-    (5) operacao -> operacao + . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (15) operacao -> - . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-    operacao                       shift and go to state 17
+    operacao                       shift and go to state 25
+    LITERAL                        shift and go to state 9
 
 state 9
 
-    (6) operacao -> operacao - . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (16) operacao -> LITERAL .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ;               reduce using rule 16 (operacao -> LITERAL .)
+    *               reduce using rule 16 (operacao -> LITERAL .)
+    /               reduce using rule 16 (operacao -> LITERAL .)
+    %               reduce using rule 16 (operacao -> LITERAL .)
+    +               reduce using rule 16 (operacao -> LITERAL .)
+    -               reduce using rule 16 (operacao -> LITERAL .)
+    &               reduce using rule 16 (operacao -> LITERAL .)
+    ^               reduce using rule 16 (operacao -> LITERAL .)
+    |               reduce using rule 16 (operacao -> LITERAL .)
 
-    operacao                       shift and go to state 18
 
 state 10
 
-    (7) operacao -> operacao & . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (18) TIPO -> TIPO_CURTO .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ID              reduce using rule 18 (TIPO -> TIPO_CURTO .)
 
-    operacao                       shift and go to state 19
 
 state 11
 
-    (8) operacao -> operacao ^ . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (19) TIPO -> TIPO_FLUTUA .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ID              reduce using rule 19 (TIPO -> TIPO_FLUTUA .)
 
-    operacao                       shift and go to state 20
 
 state 12
 
-    (9) operacao -> operacao | . operacao
-    (2) operacao -> . operacao * operacao
-    (3) operacao -> . operacao / operacao
-    (4) operacao -> . operacao % operacao
-    (5) operacao -> . operacao + operacao
-    (6) operacao -> . operacao - operacao
-    (7) operacao -> . operacao & operacao
-    (8) operacao -> . operacao ^ operacao
-    (9) operacao -> . operacao | operacao
-    (10) operacao -> . - operacao
-    (11) operacao -> . NUM
+    (20) LITERAL -> LITERAL_CURTO .
 
-    -               shift and go to state 3
-    NUM             shift and go to state 4
+    ;               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    *               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    /               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    %               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    +               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    -               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    &               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    ^               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
+    |               reduce using rule 20 (LITERAL -> LITERAL_CURTO .)
 
-    operacao                       shift and go to state 21
 
 state 13
 
-    (10) operacao -> - operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (21) LITERAL -> LITERAL_FLUTUA .
 
-    *               reduce using rule 10 (operacao -> - operacao .)
-    /               reduce using rule 10 (operacao -> - operacao .)
-    %               reduce using rule 10 (operacao -> - operacao .)
-    +               reduce using rule 10 (operacao -> - operacao .)
-    -               reduce using rule 10 (operacao -> - operacao .)
-    &               reduce using rule 10 (operacao -> - operacao .)
-    ^               reduce using rule 10 (operacao -> - operacao .)
-    |               reduce using rule 10 (operacao -> - operacao .)
-    $end            reduce using rule 10 (operacao -> - operacao .)
-
-  ! *               [ shift and go to state 5 ]
-  ! /               [ shift and go to state 6 ]
-  ! %               [ shift and go to state 7 ]
-  ! +               [ shift and go to state 8 ]
-  ! -               [ shift and go to state 9 ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
+    ;               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    *               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    /               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    %               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    +               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    -               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    &               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    ^               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
+    |               reduce using rule 21 (LITERAL -> LITERAL_FLUTUA .)
 
 
 state 14
 
-    (2) operacao -> operacao * operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (4) comando -> declaracao_de_variavel ; .
 
-    *               reduce using rule 2 (operacao -> operacao * operacao .)
-    /               reduce using rule 2 (operacao -> operacao * operacao .)
-    %               reduce using rule 2 (operacao -> operacao * operacao .)
-    +               reduce using rule 2 (operacao -> operacao * operacao .)
-    -               reduce using rule 2 (operacao -> operacao * operacao .)
-    &               reduce using rule 2 (operacao -> operacao * operacao .)
-    ^               reduce using rule 2 (operacao -> operacao * operacao .)
-    |               reduce using rule 2 (operacao -> operacao * operacao .)
-    $end            reduce using rule 2 (operacao -> operacao * operacao .)
-
-  ! *               [ shift and go to state 5 ]
-  ! /               [ shift and go to state 6 ]
-  ! %               [ shift and go to state 7 ]
-  ! +               [ shift and go to state 8 ]
-  ! -               [ shift and go to state 9 ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
+    -               reduce using rule 4 (comando -> declaracao_de_variavel ; .)
+    ID              reduce using rule 4 (comando -> declaracao_de_variavel ; .)
+    TIPO_CURTO      reduce using rule 4 (comando -> declaracao_de_variavel ; .)
+    TIPO_FLUTUA     reduce using rule 4 (comando -> declaracao_de_variavel ; .)
+    LITERAL_CURTO   reduce using rule 4 (comando -> declaracao_de_variavel ; .)
+    LITERAL_FLUTUA  reduce using rule 4 (comando -> declaracao_de_variavel ; .)
+    $end            reduce using rule 4 (comando -> declaracao_de_variavel ; .)
 
 
 state 15
 
-    (3) operacao -> operacao / operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (5) comando -> operacao ; .
 
-    *               reduce using rule 3 (operacao -> operacao / operacao .)
-    /               reduce using rule 3 (operacao -> operacao / operacao .)
-    %               reduce using rule 3 (operacao -> operacao / operacao .)
-    +               reduce using rule 3 (operacao -> operacao / operacao .)
-    -               reduce using rule 3 (operacao -> operacao / operacao .)
-    &               reduce using rule 3 (operacao -> operacao / operacao .)
-    ^               reduce using rule 3 (operacao -> operacao / operacao .)
-    |               reduce using rule 3 (operacao -> operacao / operacao .)
-    $end            reduce using rule 3 (operacao -> operacao / operacao .)
-
-  ! *               [ shift and go to state 5 ]
-  ! /               [ shift and go to state 6 ]
-  ! %               [ shift and go to state 7 ]
-  ! +               [ shift and go to state 8 ]
-  ! -               [ shift and go to state 9 ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
+    -               reduce using rule 5 (comando -> operacao ; .)
+    ID              reduce using rule 5 (comando -> operacao ; .)
+    TIPO_CURTO      reduce using rule 5 (comando -> operacao ; .)
+    TIPO_FLUTUA     reduce using rule 5 (comando -> operacao ; .)
+    LITERAL_CURTO   reduce using rule 5 (comando -> operacao ; .)
+    LITERAL_FLUTUA  reduce using rule 5 (comando -> operacao ; .)
+    $end            reduce using rule 5 (comando -> operacao ; .)
 
 
 state 16
 
-    (4) operacao -> operacao % operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (7) operacao -> operacao * . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    *               reduce using rule 4 (operacao -> operacao % operacao .)
-    /               reduce using rule 4 (operacao -> operacao % operacao .)
-    %               reduce using rule 4 (operacao -> operacao % operacao .)
-    +               reduce using rule 4 (operacao -> operacao % operacao .)
-    -               reduce using rule 4 (operacao -> operacao % operacao .)
-    &               reduce using rule 4 (operacao -> operacao % operacao .)
-    ^               reduce using rule 4 (operacao -> operacao % operacao .)
-    |               reduce using rule 4 (operacao -> operacao % operacao .)
-    $end            reduce using rule 4 (operacao -> operacao % operacao .)
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-  ! *               [ shift and go to state 5 ]
-  ! /               [ shift and go to state 6 ]
-  ! %               [ shift and go to state 7 ]
-  ! +               [ shift and go to state 8 ]
-  ! -               [ shift and go to state 9 ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
-
+    operacao                       shift and go to state 26
+    LITERAL                        shift and go to state 9
 
 state 17
 
-    (5) operacao -> operacao + operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (8) operacao -> operacao / . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    +               reduce using rule 5 (operacao -> operacao + operacao .)
-    -               reduce using rule 5 (operacao -> operacao + operacao .)
-    &               reduce using rule 5 (operacao -> operacao + operacao .)
-    ^               reduce using rule 5 (operacao -> operacao + operacao .)
-    |               reduce using rule 5 (operacao -> operacao + operacao .)
-    $end            reduce using rule 5 (operacao -> operacao + operacao .)
-    *               shift and go to state 5
-    /               shift and go to state 6
-    %               shift and go to state 7
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-  ! *               [ reduce using rule 5 (operacao -> operacao + operacao .) ]
-  ! /               [ reduce using rule 5 (operacao -> operacao + operacao .) ]
-  ! %               [ reduce using rule 5 (operacao -> operacao + operacao .) ]
-  ! +               [ shift and go to state 8 ]
-  ! -               [ shift and go to state 9 ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
-
+    operacao                       shift and go to state 27
+    LITERAL                        shift and go to state 9
 
 state 18
 
-    (6) operacao -> operacao - operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (9) operacao -> operacao % . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    +               reduce using rule 6 (operacao -> operacao - operacao .)
-    -               reduce using rule 6 (operacao -> operacao - operacao .)
-    &               reduce using rule 6 (operacao -> operacao - operacao .)
-    ^               reduce using rule 6 (operacao -> operacao - operacao .)
-    |               reduce using rule 6 (operacao -> operacao - operacao .)
-    $end            reduce using rule 6 (operacao -> operacao - operacao .)
-    *               shift and go to state 5
-    /               shift and go to state 6
-    %               shift and go to state 7
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-  ! *               [ reduce using rule 6 (operacao -> operacao - operacao .) ]
-  ! /               [ reduce using rule 6 (operacao -> operacao - operacao .) ]
-  ! %               [ reduce using rule 6 (operacao -> operacao - operacao .) ]
-  ! +               [ shift and go to state 8 ]
-  ! -               [ shift and go to state 9 ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
-
+    operacao                       shift and go to state 28
+    LITERAL                        shift and go to state 9
 
 state 19
 
-    (7) operacao -> operacao & operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (10) operacao -> operacao + . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    &               reduce using rule 7 (operacao -> operacao & operacao .)
-    ^               reduce using rule 7 (operacao -> operacao & operacao .)
-    |               reduce using rule 7 (operacao -> operacao & operacao .)
-    $end            reduce using rule 7 (operacao -> operacao & operacao .)
-    *               shift and go to state 5
-    /               shift and go to state 6
-    %               shift and go to state 7
-    +               shift and go to state 8
-    -               shift and go to state 9
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-  ! *               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
-  ! /               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
-  ! %               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
-  ! +               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
-  ! -               [ reduce using rule 7 (operacao -> operacao & operacao .) ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
-
+    operacao                       shift and go to state 29
+    LITERAL                        shift and go to state 9
 
 state 20
 
-    (8) operacao -> operacao ^ operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (11) operacao -> operacao - . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    &               reduce using rule 8 (operacao -> operacao ^ operacao .)
-    ^               reduce using rule 8 (operacao -> operacao ^ operacao .)
-    |               reduce using rule 8 (operacao -> operacao ^ operacao .)
-    $end            reduce using rule 8 (operacao -> operacao ^ operacao .)
-    *               shift and go to state 5
-    /               shift and go to state 6
-    %               shift and go to state 7
-    +               shift and go to state 8
-    -               shift and go to state 9
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-  ! *               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
-  ! /               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
-  ! %               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
-  ! +               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
-  ! -               [ reduce using rule 8 (operacao -> operacao ^ operacao .) ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
-
+    operacao                       shift and go to state 30
+    LITERAL                        shift and go to state 9
 
 state 21
 
-    (9) operacao -> operacao | operacao .
-    (2) operacao -> operacao . * operacao
-    (3) operacao -> operacao . / operacao
-    (4) operacao -> operacao . % operacao
-    (5) operacao -> operacao . + operacao
-    (6) operacao -> operacao . - operacao
-    (7) operacao -> operacao . & operacao
-    (8) operacao -> operacao . ^ operacao
-    (9) operacao -> operacao . | operacao
+    (12) operacao -> operacao & . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
 
-    &               reduce using rule 9 (operacao -> operacao | operacao .)
-    ^               reduce using rule 9 (operacao -> operacao | operacao .)
-    |               reduce using rule 9 (operacao -> operacao | operacao .)
-    $end            reduce using rule 9 (operacao -> operacao | operacao .)
-    *               shift and go to state 5
-    /               shift and go to state 6
-    %               shift and go to state 7
-    +               shift and go to state 8
-    -               shift and go to state 9
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
 
-  ! *               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
-  ! /               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
-  ! %               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
-  ! +               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
-  ! -               [ reduce using rule 9 (operacao -> operacao | operacao .) ]
-  ! &               [ shift and go to state 10 ]
-  ! ^               [ shift and go to state 11 ]
-  ! |               [ shift and go to state 12 ]
+    operacao                       shift and go to state 31
+    LITERAL                        shift and go to state 9
+
+state 22
+
+    (13) operacao -> operacao ^ . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
+
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
+
+    operacao                       shift and go to state 32
+    LITERAL                        shift and go to state 9
+
+state 23
+
+    (14) operacao -> operacao | . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
+
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
+
+    operacao                       shift and go to state 33
+    LITERAL                        shift and go to state 9
+
+state 24
+
+    (6) declaracao_de_variavel -> TIPO ID . = operacao
+
+    =               shift and go to state 34
+
+
+state 25
+
+    (15) operacao -> - operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 15 (operacao -> - operacao .)
+    *               reduce using rule 15 (operacao -> - operacao .)
+    /               reduce using rule 15 (operacao -> - operacao .)
+    %               reduce using rule 15 (operacao -> - operacao .)
+    +               reduce using rule 15 (operacao -> - operacao .)
+    -               reduce using rule 15 (operacao -> - operacao .)
+    &               reduce using rule 15 (operacao -> - operacao .)
+    ^               reduce using rule 15 (operacao -> - operacao .)
+    |               reduce using rule 15 (operacao -> - operacao .)
+
+  ! *               [ shift and go to state 16 ]
+  ! /               [ shift and go to state 17 ]
+  ! %               [ shift and go to state 18 ]
+  ! +               [ shift and go to state 19 ]
+  ! -               [ shift and go to state 20 ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 26
+
+    (7) operacao -> operacao * operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 7 (operacao -> operacao * operacao .)
+    *               reduce using rule 7 (operacao -> operacao * operacao .)
+    /               reduce using rule 7 (operacao -> operacao * operacao .)
+    %               reduce using rule 7 (operacao -> operacao * operacao .)
+    +               reduce using rule 7 (operacao -> operacao * operacao .)
+    -               reduce using rule 7 (operacao -> operacao * operacao .)
+    &               reduce using rule 7 (operacao -> operacao * operacao .)
+    ^               reduce using rule 7 (operacao -> operacao * operacao .)
+    |               reduce using rule 7 (operacao -> operacao * operacao .)
+
+  ! *               [ shift and go to state 16 ]
+  ! /               [ shift and go to state 17 ]
+  ! %               [ shift and go to state 18 ]
+  ! +               [ shift and go to state 19 ]
+  ! -               [ shift and go to state 20 ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 27
+
+    (8) operacao -> operacao / operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 8 (operacao -> operacao / operacao .)
+    *               reduce using rule 8 (operacao -> operacao / operacao .)
+    /               reduce using rule 8 (operacao -> operacao / operacao .)
+    %               reduce using rule 8 (operacao -> operacao / operacao .)
+    +               reduce using rule 8 (operacao -> operacao / operacao .)
+    -               reduce using rule 8 (operacao -> operacao / operacao .)
+    &               reduce using rule 8 (operacao -> operacao / operacao .)
+    ^               reduce using rule 8 (operacao -> operacao / operacao .)
+    |               reduce using rule 8 (operacao -> operacao / operacao .)
+
+  ! *               [ shift and go to state 16 ]
+  ! /               [ shift and go to state 17 ]
+  ! %               [ shift and go to state 18 ]
+  ! +               [ shift and go to state 19 ]
+  ! -               [ shift and go to state 20 ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 28
+
+    (9) operacao -> operacao % operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 9 (operacao -> operacao % operacao .)
+    *               reduce using rule 9 (operacao -> operacao % operacao .)
+    /               reduce using rule 9 (operacao -> operacao % operacao .)
+    %               reduce using rule 9 (operacao -> operacao % operacao .)
+    +               reduce using rule 9 (operacao -> operacao % operacao .)
+    -               reduce using rule 9 (operacao -> operacao % operacao .)
+    &               reduce using rule 9 (operacao -> operacao % operacao .)
+    ^               reduce using rule 9 (operacao -> operacao % operacao .)
+    |               reduce using rule 9 (operacao -> operacao % operacao .)
+
+  ! *               [ shift and go to state 16 ]
+  ! /               [ shift and go to state 17 ]
+  ! %               [ shift and go to state 18 ]
+  ! +               [ shift and go to state 19 ]
+  ! -               [ shift and go to state 20 ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 29
+
+    (10) operacao -> operacao + operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 10 (operacao -> operacao + operacao .)
+    +               reduce using rule 10 (operacao -> operacao + operacao .)
+    -               reduce using rule 10 (operacao -> operacao + operacao .)
+    &               reduce using rule 10 (operacao -> operacao + operacao .)
+    ^               reduce using rule 10 (operacao -> operacao + operacao .)
+    |               reduce using rule 10 (operacao -> operacao + operacao .)
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+
+  ! *               [ reduce using rule 10 (operacao -> operacao + operacao .) ]
+  ! /               [ reduce using rule 10 (operacao -> operacao + operacao .) ]
+  ! %               [ reduce using rule 10 (operacao -> operacao + operacao .) ]
+  ! +               [ shift and go to state 19 ]
+  ! -               [ shift and go to state 20 ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 30
+
+    (11) operacao -> operacao - operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 11 (operacao -> operacao - operacao .)
+    +               reduce using rule 11 (operacao -> operacao - operacao .)
+    -               reduce using rule 11 (operacao -> operacao - operacao .)
+    &               reduce using rule 11 (operacao -> operacao - operacao .)
+    ^               reduce using rule 11 (operacao -> operacao - operacao .)
+    |               reduce using rule 11 (operacao -> operacao - operacao .)
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+
+  ! *               [ reduce using rule 11 (operacao -> operacao - operacao .) ]
+  ! /               [ reduce using rule 11 (operacao -> operacao - operacao .) ]
+  ! %               [ reduce using rule 11 (operacao -> operacao - operacao .) ]
+  ! +               [ shift and go to state 19 ]
+  ! -               [ shift and go to state 20 ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 31
+
+    (12) operacao -> operacao & operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 12 (operacao -> operacao & operacao .)
+    &               reduce using rule 12 (operacao -> operacao & operacao .)
+    ^               reduce using rule 12 (operacao -> operacao & operacao .)
+    |               reduce using rule 12 (operacao -> operacao & operacao .)
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+    +               shift and go to state 19
+    -               shift and go to state 20
+
+  ! *               [ reduce using rule 12 (operacao -> operacao & operacao .) ]
+  ! /               [ reduce using rule 12 (operacao -> operacao & operacao .) ]
+  ! %               [ reduce using rule 12 (operacao -> operacao & operacao .) ]
+  ! +               [ reduce using rule 12 (operacao -> operacao & operacao .) ]
+  ! -               [ reduce using rule 12 (operacao -> operacao & operacao .) ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 32
+
+    (13) operacao -> operacao ^ operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 13 (operacao -> operacao ^ operacao .)
+    &               reduce using rule 13 (operacao -> operacao ^ operacao .)
+    ^               reduce using rule 13 (operacao -> operacao ^ operacao .)
+    |               reduce using rule 13 (operacao -> operacao ^ operacao .)
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+    +               shift and go to state 19
+    -               shift and go to state 20
+
+  ! *               [ reduce using rule 13 (operacao -> operacao ^ operacao .) ]
+  ! /               [ reduce using rule 13 (operacao -> operacao ^ operacao .) ]
+  ! %               [ reduce using rule 13 (operacao -> operacao ^ operacao .) ]
+  ! +               [ reduce using rule 13 (operacao -> operacao ^ operacao .) ]
+  ! -               [ reduce using rule 13 (operacao -> operacao ^ operacao .) ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 33
+
+    (14) operacao -> operacao | operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 14 (operacao -> operacao | operacao .)
+    &               reduce using rule 14 (operacao -> operacao | operacao .)
+    ^               reduce using rule 14 (operacao -> operacao | operacao .)
+    |               reduce using rule 14 (operacao -> operacao | operacao .)
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+    +               shift and go to state 19
+    -               shift and go to state 20
+
+  ! *               [ reduce using rule 14 (operacao -> operacao | operacao .) ]
+  ! /               [ reduce using rule 14 (operacao -> operacao | operacao .) ]
+  ! %               [ reduce using rule 14 (operacao -> operacao | operacao .) ]
+  ! +               [ reduce using rule 14 (operacao -> operacao | operacao .) ]
+  ! -               [ reduce using rule 14 (operacao -> operacao | operacao .) ]
+  ! &               [ shift and go to state 21 ]
+  ! ^               [ shift and go to state 22 ]
+  ! |               [ shift and go to state 23 ]
+
+
+state 34
+
+    (6) declaracao_de_variavel -> TIPO ID = . operacao
+    (7) operacao -> . operacao * operacao
+    (8) operacao -> . operacao / operacao
+    (9) operacao -> . operacao % operacao
+    (10) operacao -> . operacao + operacao
+    (11) operacao -> . operacao - operacao
+    (12) operacao -> . operacao & operacao
+    (13) operacao -> . operacao ^ operacao
+    (14) operacao -> . operacao | operacao
+    (15) operacao -> . - operacao
+    (16) operacao -> . LITERAL
+    (17) operacao -> . ID
+    (20) LITERAL -> . LITERAL_CURTO
+    (21) LITERAL -> . LITERAL_FLUTUA
+
+    -               shift and go to state 8
+    ID              shift and go to state 7
+    LITERAL_CURTO   shift and go to state 12
+    LITERAL_FLUTUA  shift and go to state 13
+
+    operacao                       shift and go to state 35
+    LITERAL                        shift and go to state 9
+
+state 35
+
+    (6) declaracao_de_variavel -> TIPO ID = operacao .
+    (7) operacao -> operacao . * operacao
+    (8) operacao -> operacao . / operacao
+    (9) operacao -> operacao . % operacao
+    (10) operacao -> operacao . + operacao
+    (11) operacao -> operacao . - operacao
+    (12) operacao -> operacao . & operacao
+    (13) operacao -> operacao . ^ operacao
+    (14) operacao -> operacao . | operacao
+
+    ;               reduce using rule 6 (declaracao_de_variavel -> TIPO ID = operacao .)
+    *               shift and go to state 16
+    /               shift and go to state 17
+    %               shift and go to state 18
+    +               shift and go to state 19
+    -               shift and go to state 20
+    &               shift and go to state 21
+    ^               shift and go to state 22
+    |               shift and go to state 23
 

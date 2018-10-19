@@ -3,14 +3,35 @@ import string
 
 import ply.lex as lex
 
-tokens = ('NUM',)
+reserved = {
+    'curto': 'TIPO_CURTO',
+    'flutua': 'TIPO_FLUTUA'
+}
+
+tokens = [
+    'LITERAL_CURTO',
+    'LITERAL_FLUTUA',
+    'ID'
+] + list(reserved.values())
 
 literals = string.printable
 
-def t_NUM(t):
+def t_LITERAL_FLUTUA(t):
+    r'\d+\.\d+'
+    val = t.value
+    t.value = float(val)
+    return t
+
+def t_LITERAL_CURTO(t):
     r'\d+'
     val = t.value
     t.value = int(val)
+    return t
+
+def t_ID(t):
+    r'[a-zA-Z_]+[\da-zA-Z_]*'
+    valor = t.value
+    t.type = reserved.get(valor, 'ID')
     return t
 
 t_ignore = ' \t\v\n\f'

@@ -4,6 +4,9 @@ import ply.yacc as yacc
 from lexer import tokens, literals
 
 
+symbol_table = {}
+
+
 precedence = [
     ('left', '&', '|', '^'),
     ('left', '+', '-'),
@@ -11,14 +14,34 @@ precedence = [
     ('right', 'UMINUS')
 ]
 
+start = 'comandos'
 
-start = 'comando'
+def p_empty(p):
+    '''
+    empty :
+    '''
+
+def p_comandos(p):
+    '''
+    comandos : comandos comando
+             | empty
+    '''
 
 def p_comando(p):
     '''
-    comando : operacao
+    comando : declaracao_de_variavel ';'
+            | operacao ';'
     '''
     print(p[1])
+
+def p_declaracao_de_variavel(p):
+    '''
+    declaracao_de_variavel : TIPO ID '=' operacao
+    '''
+    tipo = p[1]
+    nome = p[2]
+    valor = p[4]
+    symbol_table[nome] = (tipo, valor)
 
 def p_operacao(p):
     '''
@@ -55,12 +78,35 @@ def p_operacao_minus(p):
 
 def p_operacao_literal(p):
     '''
-    operacao : NUM
+    operacao : LITERAL
+    '''
+    p[0] = p[1]
+
+def p_operacao_variavel(p):
+    '''
+    operacao : ID
+    '''
+    nome = p[1]
+    _, valor = symbol_table[nome]
+    p[0] = valor
+
+
+def p_TIPO(p):
+    '''
+    TIPO : TIPO_CURTO
+         | TIPO_FLUTUA
+    '''
+    p[0] = p[1]
+
+def p_LITERAL(p):
+    '''
+    LITERAL : LITERAL_CURTO
+            | LITERAL_FLUTUA
     '''
     p[0] = p[1]
 
 def p_error(p):
-    print(f'Error at line {p.lineno}, position {p.lexpos}. Value "{p.value}"')
+    print(f'Error at line {p}')
 
 parser = yacc.yacc(debug=True)
 

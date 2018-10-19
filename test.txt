@@ -1,1 +1,4 @@
--10 + 1
+curto a = 1;
+flutua b = 3.14;
+
+a + b;

@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = "comandoleft&|^left+-left*/%rightUMINUSNUM\n    comando : operacao\n    \n    operacao : operacao '*' operacao\n             | operacao '/' operacao\n             | operacao '%' operacao\n             | operacao '+' operacao\n             | operacao '-' operacao\n             | operacao '&' operacao\n             | operacao '^' operacao\n             | operacao '|' operacao\n    \n    operacao : '-' operacao %prec UMINUS\n    \n    operacao : NUM\n    "
+_lr_signature = "comandosleft&|^left+-left*/%rightUMINUSID LITERAL_CURTO LITERAL_FLUTUA TIPO_CURTO TIPO_FLUTUA\n    empty :\n    \n    comandos : comandos comando\n             | empty\n    \n    comando : declaracao_de_variavel ';'\n            | operacao ';'\n    \n    declaracao_de_variavel : TIPO ID '=' operacao\n    \n    operacao : operacao '*' operacao\n             | operacao '/' operacao\n             | operacao '%' operacao\n             | operacao '+' operacao\n             | operacao '-' operacao\n             | operacao '&' operacao\n             | operacao '^' operacao\n             | operacao '|' operacao\n    \n    operacao : '-' operacao %prec UMINUS\n    \n    operacao : LITERAL\n    \n    operacao : ID\n    \n    TIPO : TIPO_CURTO\n         | TIPO_FLUTUA\n    \n    LITERAL : LITERAL_CURTO\n            | LITERAL_FLUTUA\n    "
     
-_lr_action_items = {'-':([0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,],[3,9,3,-11,3,3,3,3,3,3,3,3,-10,-2,-3,-4,-5,-6,9,9,9,]),'NUM':([0,3,5,6,7,8,9,10,11,12,],[4,4,4,4,4,4,4,4,4,4,]),'$end':([1,2,4,13,14,15,16,17,18,19,20,21,],[0,-1,-11,-10,-2,-3,-4,-5,-6,-7,-8,-9,]),'*':([2,4,13,14,15,16,17,18,19,20,21,],[5,-11,-10,-2,-3,-4,5,5,5,5,5,]),'/':([2,4,13,14,15,16,17,18,19,20,21,],[6,-11,-10,-2,-3,-4,6,6,6,6,6,]),'%':([2,4,13,14,15,16,17,18,19,20,21,],[7,-11,-10,-2,-3,-4,7,7,7,7,7,]),'+':([2,4,13,14,15,16,17,18,19,20,21,],[8,-11,-10,-2,-3,-4,-5,-6,8,8,8,]),'&':([2,4,13,14,15,16,17,18,19,20,21,],[10,-11,-10,-2,-3,-4,-5,-6,-7,-8,-9,]),'^':([2,4,13,14,15,16,17,18,19,20,21,],[11,-11,-10,-2,-3,-4,-5,-6,-7,-8,-9,]),'|':([2,4,13,14,15,16,17,18,19,20,21,],[12,-11,-10,-2,-3,-4,-5,-6,-7,-8,-9,]),}
+_lr_action_items = {'-':([0,1,2,3,5,7,8,9,12,13,14,15,16,17,18,19,20,21,22,23,25,26,27,28,29,30,31,32,33,34,35,],[-1,8,-3,-2,20,-17,8,-16,-20,-21,-4,-5,8,8,8,8,8,8,8,8,-15,-7,-8,-9,-10,-11,20,20,20,8,20,]),'ID':([0,1,2,3,6,8,10,11,14,15,16,17,18,19,20,21,22,23,34,],[-1,7,-3,-2,24,7,-18,-19,-4,-5,7,7,7,7,7,7,7,7,7,]),'TIPO_CURTO':([0,1,2,3,14,15,],[-1,10,-3,-2,-4,-5,]),'TIPO_FLUTUA':([0,1,2,3,14,15,],[-1,11,-3,-2,-4,-5,]),'LITERAL_CURTO':([0,1,2,3,8,14,15,16,17,18,19,20,21,22,23,34,],[-1,12,-3,-2,12,-4,-5,12,12,12,12,12,12,12,12,12,]),'LITERAL_FLUTUA':([0,1,2,3,8,14,15,16,17,18,19,20,21,22,23,34,],[-1,13,-3,-2,13,-4,-5,13,13,13,13,13,13,13,13,13,]),'$end':([0,1,2,3,14,15,],[-1,0,-3,-2,-4,-5,]),';':([4,5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[14,15,-17,-16,-20,-21,-15,-7,-8,-9,-10,-11,-12,-13,-14,-6,]),'*':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[16,-17,-16,-20,-21,-15,-7,-8,-9,16,16,16,16,16,16,]),'/':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[17,-17,-16,-20,-21,-15,-7,-8,-9,17,17,17,17,17,17,]),'%':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[18,-17,-16,-20,-21,-15,-7,-8,-9,18,18,18,18,18,18,]),'+':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[19,-17,-16,-20,-21,-15,-7,-8,-9,-10,-11,19,19,19,19,]),'&':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[21,-17,-16,-20,-21,-15,-7,-8,-9,-10,-11,-12,-13,-14,21,]),'^':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[22,-17,-16,-20,-21,-15,-7,-8,-9,-10,-11,-12,-13,-14,22,]),'|':([5,7,9,12,13,25,26,27,28,29,30,31,32,33,35,],[23,-17,-16,-20,-21,-15,-7,-8,-9,-10,-11,-12,-13,-14,23,]),'=':([24,],[34,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'comando':([0,],[1,]),'operacao':([0,3,5,6,7,8,9,10,11,12,],[2,13,14,15,16,17,18,19,20,21,]),}
+_lr_goto_items = {'comandos':([0,],[1,]),'empty':([0,],[2,]),'comando':([1,],[3,]),'declaracao_de_variavel':([1,],[4,]),'operacao':([1,8,16,17,18,19,20,21,22,23,34,],[5,25,26,27,28,29,30,31,32,33,35,]),'TIPO':([1,],[6,]),'LITERAL':([1,8,16,17,18,19,20,21,22,23,34,],[9,9,9,9,9,9,9,9,9,9,9,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,16 +26,26 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> comando","S'",1,None,None,None),
-  ('comando -> operacao','comando',1,'p_comando','grammar.py',19),
-  ('operacao -> operacao * operacao','operacao',3,'p_operacao','grammar.py',25),
-  ('operacao -> operacao / operacao','operacao',3,'p_operacao','grammar.py',26),
-  ('operacao -> operacao % operacao','operacao',3,'p_operacao','grammar.py',27),
-  ('operacao -> operacao + operacao','operacao',3,'p_operacao','grammar.py',28),
-  ('operacao -> operacao - operacao','operacao',3,'p_operacao','grammar.py',29),
-  ('operacao -> operacao & operacao','operacao',3,'p_operacao','grammar.py',30),
-  ('operacao -> operacao ^ operacao','operacao',3,'p_operacao','grammar.py',31),
-  ('operacao -> operacao | operacao','operacao',3,'p_operacao','grammar.py',32),
-  ('operacao -> - operacao','operacao',2,'p_operacao_minus','grammar.py',52),
-  ('operacao -> NUM','operacao',1,'p_operacao_literal','grammar.py',58),
+  ("S' -> comandos","S'",1,None,None,None),
+  ('empty -> <empty>','empty',0,'p_empty','grammar.py',21),
+  ('comandos -> comandos comando','comandos',2,'p_comandos','grammar.py',26),
+  ('comandos -> empty','comandos',1,'p_comandos','grammar.py',27),
+  ('comando -> declaracao_de_variavel ;','comando',2,'p_comando','grammar.py',32),
+  ('comando -> operacao ;','comando',2,'p_comando','grammar.py',33),
+  ('declaracao_de_variavel -> TIPO ID = operacao','declaracao_de_variavel',4,'p_declaracao_de_variavel','grammar.py',39),
+  ('operacao -> operacao * operacao','operacao',3,'p_operacao','grammar.py',48),
+  ('operacao -> operacao / operacao','operacao',3,'p_operacao','grammar.py',49),
+  ('operacao -> operacao % operacao','operacao',3,'p_operacao','grammar.py',50),
+  ('operacao -> operacao + operacao','operacao',3,'p_operacao','grammar.py',51),
+  ('operacao -> operacao - operacao','operacao',3,'p_operacao','grammar.py',52),
+  ('operacao -> operacao & operacao','operacao',3,'p_operacao','grammar.py',53),
+  ('operacao -> operacao ^ operacao','operacao',3,'p_operacao','grammar.py',54),
+  ('operacao -> operacao | operacao','operacao',3,'p_operacao','grammar.py',55),
+  ('operacao -> - operacao','operacao',2,'p_operacao_minus','grammar.py',75),
+  ('operacao -> LITERAL','operacao',1,'p_operacao_literal','grammar.py',81),
+  ('operacao -> ID','operacao',1,'p_operacao_variavel','grammar.py',87),
+  ('TIPO -> TIPO_CURTO','TIPO',1,'p_TIPO','grammar.py',96),
+  ('TIPO -> TIPO_FLUTUA','TIPO',1,'p_TIPO','grammar.py',97),
+  ('LITERAL -> LITERAL_CURTO','LITERAL',1,'p_LITERAL','grammar.py',103),
+  ('LITERAL -> LITERAL_FLUTUA','LITERAL',1,'p_LITERAL','grammar.py',104),
 ]

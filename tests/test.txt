@@ -20,4 +20,6 @@ curto add(curto a) {
             flutua a = 1.1;
         }
     }
+
+    add(1);
 }

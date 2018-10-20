@@ -215,6 +215,25 @@ def p_operacao_parenteses(p):
     '''
     p[0] = p[1]
 
+def p_opercao_chamada_funcao(p):
+    '''
+    operacao : ID '(' parametros ')'
+             | ID '(' ')'
+    '''
+    if len(p) == 5:
+        p[0] = ChamadaFuncao(p[1], p[3])
+    else:
+        p[0] = ChamadaFuncao(p[1])
+
+def p_parametros(p):
+    '''
+    parametros : parametros ',' operacao
+               | operacao
+    '''
+    if len(p) == 4:
+        p[0] = p[1] + [ p[3] ]
+    else:
+        p[0] = [ p[1] ]
 
 
 def p_TIPO(p):

@@ -4,13 +4,18 @@ import ply.lex as lex
 
 reserved = {
     'curto': 'TIPO_CURTO',
-    'flutua': 'TIPO_FLUTUA'
+    'flutua': 'TIPO_FLUTUA',
+    'se': 'STATEMENT_IF',
+    'senao': 'STATEMENT_ELSE',
+    'para': 'STATEMENT_FOR'
 }
 
 tokens = [
     'LITERAL_CURTO',
     'LITERAL_FLUTUA',
-    'ID'
+    'ID',
+    'OP_GE',
+    'OP_LE'
 ] + list(reserved.values())
 
 literals = string.printable
@@ -24,6 +29,9 @@ def t_LITERAL_CURTO(t):
     r'\d+'
     t.value = int(t.value)
     return t
+
+t_OP_GE = r'>='
+t_OP_LE = r'<='
 
 def t_ID(t):
     r'[a-zA-Z_]+[\da-zA-Z_]*'

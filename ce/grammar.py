@@ -6,6 +6,7 @@ from lexer import tokens, literals
 context_stack = []
 
 precedence = [
+    ('left', 'OP_GE', '<', 'OP_LE', '>'),
     ('left', '&', '|', '^'),
     ('left', '+', '-'),
     ('left', '*', '/', '%'),
@@ -33,6 +34,8 @@ def p_comando(p):
     '''
     print(p[1])
 
+
+
 def p_declaracao_variavel(p):
     '''
     declaracao_variavel : TIPO ID '=' operacao
@@ -53,7 +56,6 @@ def p_declaracao_funcao(p):
     else:
         p[0] = DeclaracaoFuncao(p[1], p[2], block=p[6])
 
-
 def p_argumentos_funcao(p):
     '''
     argumentos_funcao : argumentos_funcao ',' TIPO ID
@@ -64,22 +66,57 @@ def p_argumentos_funcao(p):
     else:
         p[0] = p[1] + [ Argumento(p[3], p[4]) ]
 
+
+
 def p_bloco(p):
     '''
-    bloco : '{'  '}'
+    bloco : '{' statements '}'
+          | '{' '}'
     '''
-    p[0] = Bloco(p[2])
+    if len(p) == 4:
+        p[0] = Bloco(p[2])
+    else:
+        p[0] = Bloco()
 
-
-
-def _statements(p):
+def p_statements(p):
     '''
-    statements : se_statement
-               | para_statement
-               | enquanto_statement
-               | caso_statement
-               | devolve_statement
+    statements : statements statement
+               | statement
     '''
+    if len(p) == 2:
+        p[0] = [ p[1] ]
+    else:
+        p[0] = p[1] + [ p[2] ]
+
+def p_statement(p):
+    '''
+    statement : if_statement
+              | for_statement
+              | operacao ';'
+              | declaracao_variavel ';'
+    '''
+    p[0] = p[1]
+
+def p_if_statement(p):
+    '''
+    if_statement : STATEMENT_IF '(' operacao ')' bloco
+    if_statement : STATEMENT_IF '(' operacao ')' bloco STATEMENT_ELSE bloco
+    '''
+    if len(p) == 6:
+        p[0] = StatementSe(p[3], p[5])
+    else:
+        p[0] = StatementSe(p[3], p[5], p[7])
+
+def p_for_statement(p):
+    '''
+    for_statement : STATEMENT_FOR '(' declaracao_variavel ';' operacao ';' operacao ')' bloco
+    '''
+    declaration = p[3]
+    condition = p[5]
+    step = p[7]
+    block = p[9]
+    p[0] = StatementPara(declaration, condition, step, block)
+
 
 def p_operacao(p):
     '''
@@ -91,6 +128,10 @@ def p_operacao(p):
              | operacao '&' operacao
              | operacao '^' operacao
              | operacao '|' operacao
+             | operacao '>' operacao
+             | operacao '<' operacao
+             | operacao OP_GE operacao
+             | operacao OP_LE operacao
     '''
     operations = {
         '*': Operations.MUL,
@@ -100,7 +141,11 @@ def p_operacao(p):
         '-': Operations.SUB,
         '&': Operations.AND,
         '^': Operations.XOR,
-        '|': Operations.OR
+        '|': Operations.OR,
+        '<=': Operations.LE,
+        '>=': Operations.GE,
+        '<': Operations.LT,
+        '>': Operations.GT
     }
     left = p[1]
     op = operations[p[2]]

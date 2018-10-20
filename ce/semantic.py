@@ -97,6 +97,41 @@ class StatementPara(Node):
         if self.condition.type != Types.BOOL:
             raise Exception('For loop condition be boolean. Got %s' % self.condition.type)
 
+class StatementEnquanto(Node):
+    def __init__(self, condition, block):
+        super(StatementEnquanto, self).__init__()
+        self.condition = condition
+        self.block = block
+
+    def validate(self):
+        self.condition.validate()
+        if self.condition.type != Types.BOOL:
+            raise Exception('While condition must be boolean. Got %s' % self.condition.type)
+
+        self.block.validate()
+
+class StatementCaso(Node):
+    def __init__(self, value, case_blocks):
+        super(StatementCaso, self).__init__()
+        self.value = value
+        self.case_blocks = case_blocks
+
+    def validate(self):
+        self.value.validate()
+        for block in self.case_blocks:
+            block.validate()
+
+class StatementSeja(Node):
+    def __init__(self, value, block):
+        super(StatementSeja, self).__init__()
+        self.value = value
+        self.block = block
+
+    def validate(self):
+        self.value.validate()
+        self.block.validate()
+
+
 
 class DeclaracaoVariavel(Node):
     def __init__(self, _type, name, expression=None):
@@ -147,7 +182,7 @@ class ChamadaFuncao(Node):
         for arg in self.args:
             arg.validate()
 
-class Argumento(object):
+class Argumento(Node):
     def __init__(self, _type, name):
         super(Argumento, self).__init__()
         self._type = _type

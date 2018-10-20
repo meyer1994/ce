@@ -7,7 +7,10 @@ reserved = {
     'flutua': 'TIPO_FLUTUA',
     'se': 'STATEMENT_IF',
     'senao': 'STATEMENT_ELSE',
-    'para': 'STATEMENT_FOR'
+    'para': 'STATEMENT_FOR',
+    'enquanto': 'STATEMENT_WHILE',
+    'caso': 'STATEMENT_SWITCH',
+    'seja': 'STATEMENT_CASE',
 }
 
 tokens = [

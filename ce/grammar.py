@@ -1,13 +1,9 @@
-from collections import namedtuple
-
 import ply.yacc as yacc
 
-from ce.lexer import tokens, literals
+from semantic import *
+from lexer import tokens, literals
 
-
-Node = namedtuple('Node', ('tipo', 'valor'))
-
-symbol_table = {}
+context_stack = []
 
 precedence = [
     ('left', '&', '|', '^'),
@@ -17,7 +13,6 @@ precedence = [
 ]
 
 start = 'comandos'
-
 
 
 def p_empty(p):
@@ -33,20 +28,58 @@ def p_comandos(p):
 
 def p_comando(p):
     '''
-    comando : declaracao_de_variavel ';'
-            | operacao ';'
+    comando : declaracao_variavel ';'
+            | declaracao_funcao
     '''
     print(p[1])
 
-def p_declaracao_de_variavel(p):
+def p_declaracao_variavel(p):
     '''
-    declaracao_de_variavel : TIPO ID '=' operacao
+    declaracao_variavel : TIPO ID '=' operacao
+                        | TIPO ID
     '''
-    tipo = p[1]
-    nome = p[2]
-    _, valor = p[4]
+    if len(p) == 4:
+        p[0] = DeclaracaoVariavel(p[1], p[2], p[4])
+    else:
+        p[0] = DeclaracaoVariavel(p[1], p[2])
 
-    symbol_table[nome] = Node(tipo, tipo(valor))
+def p_declaracao_funcao(p):
+    '''
+    declaracao_funcao : TIPO ID '(' argumentos_funcao ')' bloco
+                      | TIPO ID '(' ')' bloco
+    '''
+    if len(p) == 7:
+        p[0] = DeclaracaoFuncao(p[1], p[2], args=p[4], block=p[6])
+    else:
+        p[0] = DeclaracaoFuncao(p[1], p[2], block=p[6])
+
+
+def p_argumentos_funcao(p):
+    '''
+    argumentos_funcao : argumentos_funcao ',' TIPO ID
+                      | TIPO ID
+    '''
+    if len(p) == 3:
+        p[0] = [ Argumento(p[1], p[2]) ]
+    else:
+        p[0] = p[1] + [ Argumento(p[3], p[4]) ]
+
+def p_bloco(p):
+    '''
+    bloco : '{'  '}'
+    '''
+    p[0] = Bloco(p[2])
+
+
+
+def _statements(p):
+    '''
+    statements : se_statement
+               | para_statement
+               | enquanto_statement
+               | caso_statement
+               | devolve_statement
+    '''
 
 def p_operacao(p):
     '''
@@ -59,30 +92,26 @@ def p_operacao(p):
              | operacao '^' operacao
              | operacao '|' operacao
     '''
-    operacoes = {
-        '*': lambda a, b: a * b,
-        '/': lambda a, b: a / b,
-        '%': lambda a, b: a % b,
-        '+': lambda a, b: a + b,
-        '-': lambda a, b: a - b,
-        '&': lambda a, b: a & b,
-        '^': lambda a, b: a ^ b,
-        '|': lambda a, b: a | b
+    operations = {
+        '*': Operations.MUL,
+        '/': Operations.DIV,
+        '%': Operations.MOD,
+        '+': Operations.ADD,
+        '-': Operations.SUB,
+        '&': Operations.AND,
+        '^': Operations.XOR,
+        '|': Operations.OR
     }
-    operacao = operacoes[p[2]]
-    a_tipo, a_valor = p[1]
-    b_tipo, b_valor = p[3]
-
-    valor = operacao(a_valor, b_valor)
-    tipo = type(valor)
-    p[0] = Node(tipo, valor)
+    left = p[1]
+    op = operations[p[2]]
+    right = p[3]
+    p[0] = OperacaoBinaria(left, op, right)
 
 def p_operacao_minus(p):
     '''
     operacao : '-' operacao %prec UMINUS
     '''
-    tipo, valor = p[2]
-    p[0] = Node(tipo, -valor)
+    p[0] = OperacaoUnaria(Operations.UMINUS, p[2])
 
 def p_operacao_literal(p):
     '''
@@ -94,37 +123,42 @@ def p_operacao_variavel(p):
     '''
     operacao : ID
     '''
-    nome = p[1]
-    p[0] = symbol_table[nome]
+    p[0] = p[1]
 
 def p_operacao_parenteses(p):
     '''
     operacao : '(' operacao ')'
     '''
-    p[0] = p[2]
+    p[0] = p[1]
+
+
 
 def p_TIPO(p):
     '''
     TIPO : TIPO_CURTO
          | TIPO_FLUTUA
     '''
-    tipos = {
-        'curto': type(0),
-        'flutua': type(0.0)
-    }
-    p[0] = tipos[p[1]]
+    types = { t.name.lower(): t for t in Types }
+    typ = types[p[1]]
+    p[0] = Type(typ)
 
-def p_LITERAL(p):
+def p_LITERAL_curto(p):
     '''
     LITERAL : LITERAL_CURTO
-            | LITERAL_FLUTUA
     '''
-    valor = p[1]
-    tipo = type(valor)
-    p[0] = Node(tipo, valor)
+    p[0] = LiteralValor(p[1], Types.CURTO)
+
+def p_LITERAL_flutua(p):
+    '''
+    LITERAL : LITERAL_FLUTUA
+    '''
+    p[0] = LiteralValor(p[1], Types.FLUTUA)
+
+
 
 def p_error(p):
-    print('Error at line %s' % p)
+    print('Error at %s' % p)
+
 
 parser = yacc.yacc(debug=True)
 

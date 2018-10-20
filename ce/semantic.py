@@ -134,14 +134,13 @@ class StatementSeja(Node):
 
 
 class DeclaracaoVariavel(Node):
-    def __init__(self, _type, name, expression=None):
+    def __init__(self, _type, name, expression=None, dimensions=[]):
         global symbol_table
         super(DeclaracaoVariavel, self).__init__()
         self._type = _type
         self.name = name
         self.expression = expression
-
-        symbol_table[name] = _type
+        self.dimensions = dimensions
 
     def validate(self):
         if self.expression:
@@ -161,14 +160,15 @@ class DeclaracaoFuncao(Node):
 
 
 class Variavel(Node):
-    def __init__(self, name):
+    def __init__(self, name, dimension=0):
         super(Variavel, self).__init__()
         self.name = name
+        self.dimension = dimension
 
     def validate(self):
         global symbol_table
-        if self.name not in symbol_table:
-            raise Exception('Variable %s not declared' % self.name)
+        # if self.name not in symbol_table:
+        #     raise Exception('Variable %s not declared' % self.name)
 
 
 

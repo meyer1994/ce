@@ -2,4 +2,7 @@ curto a = 1;
 flutua b = 3.14;
 
 flutua c = (a + b) * 2;
-c;
+
+curto add(curto a) {
+    curto s = 2;
+}

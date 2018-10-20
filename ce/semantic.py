@@ -17,6 +17,10 @@ class Operations(IntEnum):
     DIV = auto()
     MOD = auto()
     AND = auto()
+    LE = auto()
+    GE = auto()
+    LT = auto()
+    GT = auto()
     OR = auto()
     XOR = auto()
     UMINUS = auto()
@@ -48,14 +52,45 @@ class Node(ABC):
 
 
 class Bloco(Node):
-    def __init__(self, commands):
-        super(Block, self).__init__()
+    def __init__(self, commands=[]):
+        super(Bloco, self).__init__()
         self.commands = commands
 
     def validate(self):
         for command in self.commands:
             command.validate()
 
+class StatementSe(Node):
+    def __init__(self, expression, block, else_block=None):
+        super(StatementSe, self).__init__()
+        self.expression = expression
+        self.block = block
+
+    def validate(self):
+        self.expression.validate()
+        if self.expression.type != Types.BOOL:
+            raise Exception('If expression should return a boolean')
+
+        self.block.validate()
+        if self.else_block:
+            self.else_block.validate()
+
+class StatementPara(Node):
+    def __init__(self, declaration, condition, step, block):
+        super(StatementPara, self).__init__()
+        self.declaration = declaration
+        self.condition = condition
+        self.step = step
+        self.block = block
+
+    def validate(self):
+        self.declaration.validate()
+        self.condition.validate()
+        self.step.validate()
+        self.block.validate()
+
+        if self.condition.type != Types.BOOL:
+            raise Exception('For loop condition be boolean. Got %s' % self.condition.type)
 
 
 class DeclaracaoVariavel(Node):

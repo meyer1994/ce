@@ -6,7 +6,7 @@ from lexer import tokens, literals
 context_stack = []
 
 precedence = [
-    ('left', 'OP_GE', '<', 'OP_LE', '>'),
+    ('left', 'OP_GE', '<', 'OP_LE', '>', 'OP_EQ', 'OP_NE'),
     ('left', '&', '|', '^'),
     ('left', '+', '-'),
     ('left', '*', '/', '%'),
@@ -93,6 +93,8 @@ def p_statement(p):
     '''
     statement : if_statement
               | for_statement
+              | while_statement
+              | switch_statement
               | operacao ';'
               | declaracao_variavel ';'
     '''
@@ -117,6 +119,28 @@ def p_for_statement(p):
     step = p[7]
     block = p[9]
     p[0] = StatementPara(declaration, condition, step, block)
+
+def p_while_statement(p):
+    '''
+    while_statement : STATEMENT_WHILE '(' operacao ')' bloco
+    '''
+    p[0] = StatementEnquanto(p[3], p[5])
+
+def p_switch_statement(p):
+    '''
+    switch_statement : STATEMENT_SWITCH '(' operacao ')' '{' switch_cases '}'
+    '''
+    p[0] = StatementCaso(p[3], p[6])
+
+def p_switch_cases(p):
+    '''
+    switch_cases : switch_cases STATEMENT_CASE '(' operacao ')' bloco
+                 | STATEMENT_CASE '(' operacao ')' bloco
+    '''
+    if len(p) == 7:
+        p[0] = p[1] + [ StatementSeja(p[4], p[6]) ]
+    else:
+        p[0] = [ StatementSeja(p[3], p[5]) ]
 
 
 def p_operacao_numerica(p):

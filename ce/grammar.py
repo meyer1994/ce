@@ -32,6 +32,7 @@ def p_comando(p):
     comando : declaracao_variavel ';'
             | declaracao_funcao
     '''
+    p[1].validate()
     print(p[1])
 
 
@@ -118,7 +119,7 @@ def p_for_statement(p):
     p[0] = StatementPara(declaration, condition, step, block)
 
 
-def p_operacao(p):
+def p_operacao_numerica(p):
     '''
     operacao : operacao '*' operacao
              | operacao '/' operacao
@@ -128,10 +129,6 @@ def p_operacao(p):
              | operacao '&' operacao
              | operacao '^' operacao
              | operacao '|' operacao
-             | operacao '>' operacao
-             | operacao '<' operacao
-             | operacao OP_GE operacao
-             | operacao OP_LE operacao
     '''
     operations = {
         '*': Operations.MUL,
@@ -142,10 +139,28 @@ def p_operacao(p):
         '&': Operations.AND,
         '^': Operations.XOR,
         '|': Operations.OR,
+    }
+    left = p[1]
+    op = operations[p[2]]
+    right = p[3]
+    p[0] = OperacaoBinaria(left, op, right)
+
+def p_operacao_booleana(p):
+    '''
+    operacao : operacao '>' operacao
+             | operacao '<' operacao
+             | operacao OP_GE operacao
+             | operacao OP_LE operacao
+             | operacao OP_EQ operacao
+             | operacao OP_NE operacao
+    '''
+    operations = {
         '<=': Operations.LE,
         '>=': Operations.GE,
         '<': Operations.LT,
-        '>': Operations.GT
+        '>': Operations.GT,
+        '==': Operations.EQ,
+        '!=': Operations.NE
     }
     left = p[1]
     op = operations[p[2]]
@@ -168,7 +183,7 @@ def p_operacao_variavel(p):
     '''
     operacao : ID
     '''
-    p[0] = p[1]
+    p[0] = Variavel(p[1])
 
 def p_operacao_parenteses(p):
     '''

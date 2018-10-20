@@ -15,7 +15,9 @@ tokens = [
     'LITERAL_FLUTUA',
     'ID',
     'OP_GE',
-    'OP_LE'
+    'OP_LE',
+    'OP_EQ',
+    'OP_NE'
 ] + list(reserved.values())
 
 literals = string.printable
@@ -32,6 +34,8 @@ def t_LITERAL_CURTO(t):
 
 t_OP_GE = r'>='
 t_OP_LE = r'<='
+t_OP_EQ = r'=='
+t_OP_NE = r'!='
 
 def t_ID(t):
     r'[a-zA-Z_]+[\da-zA-Z_]*'

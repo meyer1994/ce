@@ -8,6 +8,8 @@ symbol_table = {}
 class Types(IntEnum):
     CURTO = auto()
     FLUTUA = auto()
+    BOOL = auto()
+    VOID = auto()
 
 
 class Operations(IntEnum):
@@ -21,6 +23,8 @@ class Operations(IntEnum):
     GE = auto()
     LT = auto()
     GT = auto()
+    EQ = auto()
+    NE = auto()
     OR = auto()
     XOR = auto()
     UMINUS = auto()
@@ -65,6 +69,7 @@ class StatementSe(Node):
         super(StatementSe, self).__init__()
         self.expression = expression
         self.block = block
+        self.else_block = else_block
 
     def validate(self):
         self.expression.validate()
@@ -95,10 +100,13 @@ class StatementPara(Node):
 
 class DeclaracaoVariavel(Node):
     def __init__(self, _type, name, expression=None):
+        global symbol_table
         super(DeclaracaoVariavel, self).__init__()
         self._type = _type
         self.name = name
         self.expression = expression
+
+        symbol_table[name] = _type
 
     def validate(self):
         if self.expression:
@@ -118,13 +126,14 @@ class DeclaracaoFuncao(Node):
 
 
 class Variavel(Node):
-    def __init__(self, _type, name):
+    def __init__(self, name):
         super(Variavel, self).__init__()
-        self._type = _type
         self.name = name
 
     def validate(self):
-        pass
+        global symbol_table
+        if self.name not in symbol_table:
+            raise Exception('Variable %s not declared' % self.name)
 
 
 
@@ -154,6 +163,14 @@ class Operacao(Node):
         Types.FLUTUA,
         Types.CURTO
     }
+    BOOLEAN_OPERATIONS = {
+        Operations.EQ,
+        Operations.NE,
+        Operations.LE,
+        Operations.LT,
+        Operations.GE,
+        Operations.GT
+    }
 
 class OperacaoBinaria(Operacao):
     def __init__(self, left, operation, right):
@@ -171,14 +188,19 @@ class OperacaoBinaria(Operacao):
         self.left.validate()
         self.right.validate()
 
-        # Check if children are of valid types
-        if { self.left.type, self.right.type } > OperacaoBinaria.NUMERIC_TYPES:
-            raise Exception('Operations can only be performed with numbers')
+        # Check for operation type
+        if self.operation in self.BOOLEAN_OPERATIONS:
+            self._type = Types.BOOL
+            return
 
-        # Assign your own type
-        if Types.FLUTUA in { self.left.type, self.right.type }:
+        if self.operation in self.NUMERIC_TYPES:
+            return self._numeric_validate()
+
+    def _numeric_validate(self):
+        types = { self.left.type, self.right.type }
+        if Types.FLUTUA in types:
             self._type = Types.FLUTUA
-        else:
+        elif { Types.CURTO } == types:
             self._type = Types.CURTO
 
 class OperacaoUnaria(Operacao):

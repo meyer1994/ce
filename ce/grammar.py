@@ -122,7 +122,7 @@ def p_if_statement(p):
 
 def p_for_statement(p):
     '''
-    for_statement : STATEMENT_FOR '(' declaracao_variavel ';' operacao ';' operacao ')' bloco
+    for_statement : STATEMENT_FOR '(' declaracao_variavel ';' operacao ';' atribuicao ')' bloco
     '''
     declaration = p[3]
     condition = p[5]

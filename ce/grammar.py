@@ -3,8 +3,6 @@ import ply.yacc as yacc
 from semantic import *
 from lexer import tokens, literals
 
-context_stack = []
-
 precedence = [
     ('left', 'OP_GE', '<', 'OP_LE', '>', 'OP_EQ', 'OP_NE'),
     ('left', '&', '|', '^'),
@@ -47,6 +45,22 @@ def p_declaracao_variavel(p):
         p[0] = DeclaracaoVariavel(p[1], p[2], p[4])
     else:
         p[0] = DeclaracaoVariavel(p[1], p[2])
+
+def p_declaracao_variavel_array(p):
+    '''
+    declaracao_variavel : TIPO ID array
+    '''
+    p[0] = DeclaracaoVariavel(p[1], p[2], dimensions=p[3])
+
+def p_array(p):
+    '''
+    array : array '[' operacao ']'
+          | '[' operacao ']'
+    '''
+    if len(p) == 5:
+        p[0] = p[1] + [ p[3] ]
+    else:
+        p[0] = [ p[2] ]
 
 def p_declaracao_funcao(p):
     '''
@@ -219,6 +233,12 @@ def p_operacao_variavel(p):
     operacao : ID
     '''
     p[0] = Variavel(p[1])
+
+def p_operacao_variavel_array(p):
+    '''
+    operacao : ID array
+    '''
+    p[0] = Variavel(p[1], len(p[2]))
 
 def p_operacao_parenteses(p):
     '''

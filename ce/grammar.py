@@ -30,6 +30,7 @@ def p_comandos(p):
 def p_comando(p):
     '''
     comando : declaracao_variavel ';'
+            | atribuicao ';'
             | declaracao_funcao
     '''
     p[1].validate()
@@ -69,6 +70,14 @@ def p_argumentos_funcao(p):
 
 
 
+def p_atribuicao(p):
+    '''
+    atribuicao : ID '=' operacao
+    '''
+    p[0] = Atribuicao(p[1], p[3])
+
+
+
 def p_bloco(p):
     '''
     bloco : '{' statements '}'
@@ -96,6 +105,7 @@ def p_statement(p):
               | while_statement
               | switch_statement
               | operacao ';'
+              | atribuicao ';'
               | declaracao_variavel ';'
     '''
     p[0] = p[1]
@@ -141,6 +151,7 @@ def p_switch_cases(p):
         p[0] = p[1] + [ StatementSeja(p[4], p[6]) ]
     else:
         p[0] = [ StatementSeja(p[3], p[5]) ]
+
 
 
 def p_operacao_numerica(p):
@@ -234,6 +245,7 @@ def p_parametros(p):
         p[0] = p[1] + [ p[3] ]
     else:
         p[0] = [ p[1] ]
+
 
 
 def p_TIPO(p):

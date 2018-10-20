@@ -261,6 +261,17 @@ class OperacaoUnaria(Operacao):
 
 
 
+class Atribuicao(Node):
+    def __init__(self, name, operation):
+        super(Atribuicao, self).__init__()
+        self.name = name
+        self.operation = operation
+
+    def validate(self):
+        self.operation.validate()
+
+
+
 class LiteralValor(Node):
     def __init__(self, value, _type):
         super(LiteralValor, self).__init__()

@@ -11,7 +11,7 @@ precedence = [
     ('right', 'UMINUS')
 ]
 
-start = 'comandos'
+start = 'comeco'
 
 
 def p_empty(p):
@@ -19,11 +19,24 @@ def p_empty(p):
     empty :
     '''
 
+def p_comeco(p):
+    '''
+    comeco : comandos
+           | empty
+    '''
+    b = Bloco(p[1])
+    b.validate()
+
 def p_comandos(p):
     '''
     comandos : comandos comando
-             | empty
+             | comando
     '''
+    if len(p) == 3:
+        p[0] = p[1] + [ p[2] ]
+    else:
+        p[0] = [ p[1] ]
+
 
 def p_comando(p):
     '''
@@ -31,9 +44,7 @@ def p_comando(p):
             | atribuicao ';'
             | declaracao_funcao
     '''
-    p[1].validate()
-    print(p[1])
-
+    p[0] = p[1]
 
 
 def p_declaracao_variavel(p):
@@ -50,7 +61,8 @@ def p_declaracao_variavel_array(p):
     '''
     declaracao_variavel : TIPO ID array
     '''
-    p[0] = DeclaracaoVariavel(p[1], p[2], dimensions=p[3])
+    dim = len(p[3])
+    p[0] = DeclaracaoVariavel(p[1], p[2], dimensions=dim)
 
 def p_array(p):
     '''
@@ -88,8 +100,16 @@ def p_atribuicao(p):
     '''
     atribuicao : ID '=' operacao
     '''
-    p[0] = Atribuicao(p[1], p[3])
+    var = Variavel(p[1])
+    p[0] = Atribuicao(var, p[3])
 
+def p_atribuicao_array(p):
+    '''
+    atribuicao : ID array '=' operacao
+    '''
+    dimensions = len(p[2])
+    var = Variavel(p[1], dimensions)
+    p[0] = Atribuicao(var, p[4])
 
 
 def p_bloco(p):
@@ -121,6 +141,7 @@ def p_statement(p):
               | operacao ';'
               | atribuicao ';'
               | declaracao_variavel ';'
+              | return_statement ';'
     '''
     p[0] = p[1]
 
@@ -166,6 +187,11 @@ def p_switch_cases(p):
     else:
         p[0] = [ StatementSeja(p[3], p[5]) ]
 
+def p_return_statement(p):
+    '''
+    return_statement : STATEMENT_RETURN operacao
+    '''
+    p[0] = p[2]
 
 
 def p_operacao_numerica(p):
@@ -179,18 +205,8 @@ def p_operacao_numerica(p):
              | operacao '^' operacao
              | operacao '|' operacao
     '''
-    operations = {
-        '*': Operations.MUL,
-        '/': Operations.DIV,
-        '%': Operations.MOD,
-        '+': Operations.ADD,
-        '-': Operations.SUB,
-        '&': Operations.AND,
-        '^': Operations.XOR,
-        '|': Operations.OR,
-    }
     left = p[1]
-    op = operations[p[2]]
+    op = Operations.NUMERICO
     right = p[3]
     p[0] = OperacaoBinaria(left, op, right)
 
@@ -203,16 +219,8 @@ def p_operacao_booleana(p):
              | operacao OP_EQ operacao
              | operacao OP_NE operacao
     '''
-    operations = {
-        '<=': Operations.LE,
-        '>=': Operations.GE,
-        '<': Operations.LT,
-        '>': Operations.GT,
-        '==': Operations.EQ,
-        '!=': Operations.NE
-    }
     left = p[1]
-    op = operations[p[2]]
+    op = Operations.OPINIAO
     right = p[3]
     p[0] = OperacaoBinaria(left, op, right)
 
@@ -220,7 +228,7 @@ def p_operacao_minus(p):
     '''
     operacao : '-' operacao %prec UMINUS
     '''
-    p[0] = OperacaoUnaria(Operations.UMINUS, p[2])
+    p[0] = OperacaoUnaria(Operations.NUMERICO, p[2])
 
 def p_operacao_literal(p):
     '''
@@ -280,21 +288,25 @@ def p_TIPO(p):
          | TIPO_DUPLO
          | TIPO_OPINIAO
     '''
-    types = { t.name.lower(): t for t in Types }
-    typ = types[p[1]]
-    p[0] = Type(typ)
+    types = {
+        'nada': Types.NADA,
+        'letra': Types.LETRA,
+        'letras': Types.LETRAS,
+        'curto': Types.NUMERICO,
+        'medio': Types.NUMERICO,
+        'comprido': Types.NUMERICO,
+        'flutua': Types.NUMERICO,
+        'duplo': Types.NUMERICO,
+        'opiniao': Types.OPINIAO
+    }
+    p[0] = types[p[1]]
 
-def p_LITERAL_curto(p):
+def p_LITERAL_numerico(p):
     '''
     LITERAL : LITERAL_CURTO
+            | LITERAL_FLUTUA
     '''
-    p[0] = LiteralValor(p[1], Types.CURTO)
-
-def p_LITERAL_flutua(p):
-    '''
-    LITERAL : LITERAL_FLUTUA
-    '''
-    p[0] = LiteralValor(p[1], Types.FLUTUA)
+    p[0] = LiteralValor(p[1], Types.NUMERICO)
 
 def p_LITERAL_letra(p):
     '''

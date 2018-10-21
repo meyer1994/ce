@@ -25,6 +25,9 @@ reserved = {
     'enquanto': 'STATEMENT_WHILE',
     'caso': 'STATEMENT_SWITCH',
     'seja': 'STATEMENT_CASE',
+
+    # Ohters
+    'devolve': 'STATEMENT_RETURN',
 }
 
 tokens = [
@@ -43,7 +46,7 @@ literals = string.printable
 
 def t_LITERAL_LETRA(t):
     r"'.?'"
-    t.value = chr(t.value[1])
+    t.value = t.value[1]
     return t
 
 def t_LITERAL_LETRAS(t):

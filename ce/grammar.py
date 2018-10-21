@@ -270,8 +270,15 @@ def p_parametros(p):
 
 def p_TIPO(p):
     '''
-    TIPO : TIPO_CURTO
+    TIPO : TIPO_NADA
+         | TIPO_LETRA
+         | TIPO_LETRAS
+         | TIPO_CURTO
+         | TIPO_MEDIO
+         | TIPO_COMPRIDO
          | TIPO_FLUTUA
+         | TIPO_DUPLO
+         | TIPO_OPINIAO
     '''
     types = { t.name.lower(): t for t in Types }
     typ = types[p[1]]
@@ -288,6 +295,30 @@ def p_LITERAL_flutua(p):
     LITERAL : LITERAL_FLUTUA
     '''
     p[0] = LiteralValor(p[1], Types.FLUTUA)
+
+def p_LITERAL_letra(p):
+    '''
+    LITERAL : LITERAL_LETRA
+    '''
+    p[0] = LiteralValor(p[1], Types.LETRA)
+
+def p_LITERAL_letras(p):
+    '''
+    LITERAL : LITERAL_LETRAS
+    '''
+    p[0] = LiteralValor(p[1], Types.LETRAS)
+
+def p_LITERAL_concordo(p):
+    '''
+    LITERAL : LITERAL_CONCORDO
+    '''
+    p[0] = LiteralValor(True, Types.OPINIAO)
+
+def p_LITERAL_discordo(p):
+    '''
+    LITERAL : LITERAL_DISCORDO
+    '''
+    p[0] = LiteralValor(False, Types.OPINIAO)
 
 
 

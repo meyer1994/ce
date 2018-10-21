@@ -7,9 +7,14 @@ symbol_table = {}
 
 class Types(IntEnum):
     CURTO = auto()
+    MEDIO = auto()
+    COMPRIDO = auto()
     FLUTUA = auto()
-    BOOL = auto()
-    VOID = auto()
+    DUPLO = auto()
+    OPINIAO = auto()
+    LETRA = auto()
+    LETRAS = auto()
+    NADA = auto()
 
 
 class Operations(IntEnum):
@@ -73,7 +78,7 @@ class StatementSe(Node):
 
     def validate(self):
         self.expression.validate()
-        if self.expression.type != Types.BOOL:
+        if self.expression.type != Types.OPINIAO:
             raise Exception('If expression should return a boolean')
 
         self.block.validate()
@@ -94,7 +99,7 @@ class StatementPara(Node):
         self.step.validate()
         self.block.validate()
 
-        if self.condition.type != Types.BOOL:
+        if self.condition.type != Types.OPINIAO:
             raise Exception('For loop condition be boolean. Got %s' % self.condition.type)
 
 class StatementEnquanto(Node):
@@ -105,7 +110,7 @@ class StatementEnquanto(Node):
 
     def validate(self):
         self.condition.validate()
-        if self.condition.type != Types.BOOL:
+        if self.condition.type != Types.OPINIAO:
             raise Exception('While condition must be boolean. Got %s' % self.condition.type)
 
         self.block.validate()
@@ -225,7 +230,7 @@ class OperacaoBinaria(Operacao):
 
         # Check for operation type
         if self.operation in self.BOOLEAN_OPERATIONS:
-            self._type = Types.BOOL
+            self._type = Types.OPINIAO
             return
 
         if self.operation in self.NUMERIC_TYPES:

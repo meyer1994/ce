@@ -3,8 +3,22 @@ import string
 import ply.lex as lex
 
 reserved = {
+    # Types
+    'nada': 'TIPO_NADA',
+    'letra': 'TIPO_LETRA',
+    'letras': 'TIPO_LETRAS',
     'curto': 'TIPO_CURTO',
+    'medio': 'TIPO_MEDIO',
+    'comprido': 'TIPO_COMPRIDO',
     'flutua': 'TIPO_FLUTUA',
+    'duplo': 'TIPO_DUPLO',
+    'opiniao': 'TIPO_OPINIAO',
+
+    # Literals
+    'concordo': 'LITERAL_CONCORDO',
+    'discordo': 'LITERAL_DISCORDO',
+
+    # Structures
     'se': 'STATEMENT_IF',
     'senao': 'STATEMENT_ELSE',
     'para': 'STATEMENT_FOR',
@@ -16,6 +30,8 @@ reserved = {
 tokens = [
     'LITERAL_CURTO',
     'LITERAL_FLUTUA',
+    'LITERAL_LETRA',
+    'LITERAL_LETRAS',
     'ID',
     'OP_GE',
     'OP_LE',
@@ -24,6 +40,17 @@ tokens = [
 ] + list(reserved.values())
 
 literals = string.printable
+
+def t_LITERAL_LETRA(t):
+    r"'.?'"
+    t.value = chr(t.value[1])
+    return t
+
+def t_LITERAL_LETRAS(t):
+    r'"[^"]*"'
+    val = t.value
+    t.value = str(val[1:len(val)-1])
+    return t
 
 def t_LITERAL_FLUTUA(t):
     r'\d+\.\d+'

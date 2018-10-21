@@ -5,6 +5,9 @@ flutua c = (a + b) * 2;
 curto d[1 + 3];
 c = 1.1;
 
+duplo a = 0.0;
+opiniao o = concordo;
+
 curto add(curto a) {
     se (a > 1) {
         curto s = 1;
@@ -13,7 +16,7 @@ curto add(curto a) {
     para (curto i = 1; i < 10; i = i + 2) {
         flutua t = 1.1;
     }
-    enquanto (i < 10) {
+    enquanto (i == 10) {
         flutua t = 1.1;
     }
 

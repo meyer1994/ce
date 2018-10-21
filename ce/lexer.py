@@ -44,6 +44,8 @@ tokens = [
 
 literals = string.printable
 
+t_ignore_COMMENT = r'(/\*(.|\n)*?\*/)|(//.*)'
+
 def t_LITERAL_LETRA(t):
     r"'.?'"
     t.value = t.value[1]

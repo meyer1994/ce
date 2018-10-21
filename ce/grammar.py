@@ -24,8 +24,9 @@ def p_comeco(p):
     comeco : comandos
            | empty
     '''
-    b = Bloco(p[1])
-    b.validate()
+    if p[1] is not None:
+        b = Bloco(p[1])
+        b.validate()
 
 def p_comandos(p):
     '''
@@ -42,17 +43,18 @@ def p_comando(p):
     '''
     comando : declaracao_variavel ';'
             | atribuicao ';'
+            | operacao ';'
             | declaracao_funcao
     '''
     p[0] = p[1]
-
+    print(p[0])
 
 def p_declaracao_variavel(p):
     '''
     declaracao_variavel : TIPO ID '=' operacao
                         | TIPO ID
     '''
-    if len(p) == 4:
+    if len(p) == 5:
         p[0] = DeclaracaoVariavel(p[1], p[2], p[4])
     else:
         p[0] = DeclaracaoVariavel(p[1], p[2])
@@ -254,7 +256,7 @@ def p_operacao_parenteses(p):
     '''
     p[0] = p[1]
 
-def p_opercao_chamada_funcao(p):
+def p_operacao_chamada_funcao(p):
     '''
     operacao : ID '(' parametros ')'
              | ID '(' ')'

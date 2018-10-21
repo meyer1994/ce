@@ -1,32 +1,38 @@
-curto a = 1;
-flutua b = 3.14;
 
-flutua c = (a + b) * 2;
-curto d[1 + 3];
-c = 1.1;
+medio a = 1;
+duplo b = 2.1;
+letra c = 'c';
+letras s = "abc";
 
-opiniao o = concordo;
+curto arr[1][2];
+// arr[1][2][3]; // erro: mais dimensoes
 
-curto add(curto a) {
-    se (a > 1) {
-        d[1] = 1;
-        curto x = 1;
-    } senao {
-        b = 2;
-    }
-    a = 1;
-    para (curto i = 1; i < 10; i = i + 2) {
-    }
-    enquanto (i == 10) {
-        flutua t = 1.1;
+// medio d = 'a'; // erro: tipos diferentes
+// letra d = 1; // erro: tipos diferentes
+
+medio soma(curto a, curto b) {
+    se (a < 0) {
+        devolve 0;
     }
 
-    caso (10) {
-        seja (1) {
-            flutua f = 1.1;
-        }
+    // se (b + 0) {  // erro: operacao nao retorna booleana
+    se (b < 0) {
+        devolve 0;
     }
-
-    add(a[1]);
     devolve a + b;
+}
+
+comprido outra_soma(comprido a, comprido b) {
+
+    // q = 1; // erro: nao delcarado
+
+    // devolve outra_soma(-a, b);  // erro: ourta_soma nao declarada
+    devolve soma(-a, b);
+}
+
+
+nada loop(curto a) {
+    para (curto i = 0; i < a; i = i + 2) {
+        // algo
+    }
 }

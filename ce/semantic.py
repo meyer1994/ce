@@ -3,6 +3,9 @@ from enum import IntEnum, auto
 from copy import deepcopy
 
 
+functions = {}
+
+
 class Scopes(object):
     def __init__(self):
         super(Scopes, self).__init__()
@@ -18,6 +21,12 @@ class Scopes(object):
     @property
     def current(self):
         return self.scopes[-1]
+
+    def get(self, name):
+        for s in reversed(self.scopes):
+            if name in s:
+                return s[name]
+        return None
 
 
 scope = Scopes()
@@ -141,13 +150,18 @@ class DeclaracaoVariavel(Node):
         self.expression = expression
         self.dimensions = dimensions
 
-        if name in scope.current:
+        var = scope.get(name)
+        if var is not None:
             raise Exception('Redeclaration of variable "%s"' % name)
         scope.current[name] = (_type, dimensions)
 
     def validate(self):
         if self.expression:
             self.expression.validate()
+            if self.expression.type != self.type:
+                error = '(%s and %s)' % (self.type, self.expression.type)
+                raise Exception('Assigning different types %s' % error)
+
 
 class DeclaracaoFuncao(Node):
     def __init__(self, _type, name, block, args=[]):
@@ -156,6 +170,10 @@ class DeclaracaoFuncao(Node):
         self.name = name
         self.args = args
         self.block = block
+
+        if name in functions:
+            raise Exception('Redeclaration of function %s' % name)
+        functions[name] = (_type, args)
 
     def validate(self):
         self.block.validate()
@@ -169,10 +187,14 @@ class Variavel(Node):
         self.dimensions = dimensions
 
     def validate(self):
-        if self.name not in scope.current:
+        var = scope.get(self.name)
+        if var is None:
             raise Exception('Variable "%s" not declared' % self.name)
 
-        self._type, dimensions = scope.current[self.name]
+        _type, dimensions = var
+        if dimensions < self.dimensions:
+            raise Exception('Trying to accesss bigger dimensions')
+        self._type = _type
 
 
 class Atribuicao(Node):
@@ -198,8 +220,16 @@ class ChamadaFuncao(Node):
         self.args = args
 
     def validate(self):
-        for arg in self.args:
-            arg.validate()
+        if self.name not in functions:
+            raise Exception('Function "%s" not delcared' % self.name)
+
+        _type, args = functions[self.name]
+        self._type = _type
+
+        for arg, par in zip(args, self.args):
+            par.validate()
+            if arg.type != par.type:
+                raise Exception('Invalid types passed in function call')
 
 class Argumento(Node):
     def __init__(self, _type, name):
@@ -247,15 +277,10 @@ class OperacaoUnaria(Node):
         self.right = right
 
     def validate(self):
-        # Check if operations is valid
-        if not isinstance(self.operation, Operations):
-            raise Exception('Invalid operation. Got %s' % self.operation)
-
-        # Valid child
         self.right.validate()
 
         # Check for valid type
-        if self.right.type not in OperacaoUnaria.NUMERICO_TYPES:
+        if self.right.type != Operations.NUMERICO:
             raise Exception('Operations can only be performed with numbers')
 
         # Set own type

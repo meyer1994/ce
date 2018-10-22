@@ -46,6 +46,10 @@ literals = string.printable
 
 t_ignore_COMMENT = r'(/\*(.|\n)*?\*/)|(//.*)'
 
+def t_ignore_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
 def t_LITERAL_LETRA(t):
     r"'.?'"
     t.value = t.value[1]
@@ -77,10 +81,10 @@ def t_ID(t):
     t.type = reserved.get(t.value, 'ID')
     return t
 
-t_ignore = ' \t\v\n\f'
+t_ignore = ' \t\v\f'
 
 def t_error(t):
-    print('Error at line', t.lineno, 'position', t.lexpos)
+    raise SyntaxError('Error at line %d, position %d' % (t.lineno, t.lexpos))
 
 lexer = lex.lex()
 
@@ -89,4 +93,4 @@ lexer = lex.lex()
 # Scripting part
 #
 if __name__ == '__main__':
-    lex.runmain()
+    lex.runmain() # pragma: no cover

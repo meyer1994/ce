@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
-from copy import deepcopy
 
 
 functions = {}
@@ -65,13 +64,16 @@ class Bloco(Node):
     def __init__(self, commands=[]):
         super(Bloco, self).__init__()
         self.commands = commands
-        scope.create()
-        self.validate()
-        scope.pop()
 
     def validate(self):
+        scope.create()
+        for var in self.commands:
+            if isinstance(var, DeclaracaoVariavel):
+                scope.current[var.name] = (var.type, var.dimensions)
+
         for command in self.commands:
             command.validate()
+        scope.pop()
 
 class StatementSe(Node):
     def __init__(self, expression, block, else_block=None):
@@ -96,6 +98,9 @@ class StatementPara(Node):
         self.condition = condition
         self.step = step
         self.block = block
+
+        var = (declaration.type, declaration.dimensions)
+        scope.current[declaration.name] = var
 
     def validate(self):
         self.declaration.validate()
@@ -149,12 +154,11 @@ class DeclaracaoVariavel(Node):
         self.name = name
         self.expression = expression
         self.dimensions = dimensions
-
-        if name in scope.current:
-            raise Exception('Redeclaration of variable "%s"' % name)
-        scope.current[name] = (_type, dimensions)
+        if self.name in scope.current:
+            raise Exception('Redeclaration of variable "%s"' % self.name)
 
     def validate(self):
+
         if self.expression:
             self.expression.validate()
             if self.expression.type != self.type:
@@ -198,7 +202,6 @@ class Variavel(Node):
             raise Exception('Trying to access bigger dimensions')
         self._type = _type
 
-
 class Atribuicao(Node):
     def __init__(self, var, operation):
         super(Atribuicao, self).__init__()
@@ -228,8 +231,13 @@ class ChamadaFuncao(Node):
         _type, args = functions[self.name]
         self._type = _type
 
+        if len(args) != len(self.args):
+            error = '%d and %d' % (len(args), len(self.args))
+            raise Exception('Number of parameters is incorrect (%s)' % error)
+
         for arg, par in zip(args, self.args):
             par.validate()
+            arg.validate()
             if arg.type != par.type:
                 raise Exception('Invalid types passed in function call')
 
@@ -244,7 +252,6 @@ class Argumento(Node):
 
     def validate(self):
         pass
-
 
 
 

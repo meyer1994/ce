@@ -13,11 +13,13 @@ curto arr[1][2];
 medio soma(curto a, curto d) {
     d = 1;
     se (a < 0) {
+        curto q = 1;
         devolve 0;
     }
 
     // se (b + 0) {  // erro: operacao nao retorna booleana
     se (b < 0) {
+        // q = 2; // erro: nao declarado
         devolve 0;
     }
     devolve a + b;
@@ -35,5 +37,9 @@ comprido outra_soma(comprido a, comprido b) {
 nada loop(curto a) {
     para (curto i = 0; i < a; i = i + 2) {
         // algo
+        i = i + 2;
+        a = i;
+        // outra_soma(a, 'a'); // erro: tipagem errada
+        // outra_soma(a, 2, 2); // erro: quantidade de parametros errada
     }
 }

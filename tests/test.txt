@@ -10,7 +10,8 @@ curto arr[1][2];
 // medio d = 'a'; // erro: tipos diferentes
 // letra d = 1; // erro: tipos diferentes
 
-medio soma(curto a, curto b) {
+medio soma(curto a, curto d) {
+    d = 1;
     se (a < 0) {
         devolve 0;
     }

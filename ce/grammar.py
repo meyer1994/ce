@@ -88,15 +88,23 @@ def p_declaracao_funcao(p):
 
 def p_argumentos_funcao(p):
     '''
-    argumentos_funcao : argumentos_funcao ',' TIPO ID
-                      | TIPO ID
+    argumentos_funcao : argumentos_funcao ',' argumento
+                      | argumento
+    '''
+    if len(p) == 2:
+        p[0] = [ p[1] ]
+    else:
+        p[0] = p[1] + [ p[3] ]
+
+def p_argumento(p):
+    '''
+    argumento : TIPO ID
+              | TIPO ID array
     '''
     if len(p) == 3:
-        p[0] = [ Argumento(p[1], p[2]) ]
+        p[0] = Argumento(p[1], p[2], 0)
     else:
-        p[0] = p[1] + [ Argumento(p[3], p[4]) ]
-
-
+        p[0] = Argumento(p[1], p[2], len(p[3]))
 
 def p_atribuicao(p):
     '''

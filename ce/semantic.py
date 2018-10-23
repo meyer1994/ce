@@ -12,8 +12,7 @@ class Scopes(object):
         self.scopes = [ {} ]
 
     def create(self):
-        new = self.current.copy()
-        self.scopes.append(new)
+        self.scopes.append({})
 
     def pop(self):
         return self.scopes.pop()
@@ -38,6 +37,7 @@ class Types(IntEnum):
     LETRA = auto()
     LETRAS = auto()
     NADA = auto()
+    FUNCAO = auto()
 
 class Operations(IntEnum):
     NUMERICO = auto()
@@ -150,8 +150,7 @@ class DeclaracaoVariavel(Node):
         self.expression = expression
         self.dimensions = dimensions
 
-        var = scope.get(name)
-        if var is not None:
+        if name in scope.current:
             raise Exception('Redeclaration of variable "%s"' % name)
         scope.current[name] = (_type, dimensions)
 
@@ -161,7 +160,6 @@ class DeclaracaoVariavel(Node):
             if self.expression.type != self.type:
                 error = '(%s and %s)' % (self.type, self.expression.type)
                 raise Exception('Assigning different types %s' % error)
-
 
 class DeclaracaoFuncao(Node):
     def __init__(self, _type, name, block, args=[]):
@@ -174,6 +172,10 @@ class DeclaracaoFuncao(Node):
         if name in functions:
             raise Exception('Redeclaration of function %s' % name)
         functions[name] = (_type, args)
+
+        for arg in args:
+            scope.current[arg.name] = (arg.type, arg.dimensions)
+
 
     def validate(self):
         self.block.validate()
@@ -193,7 +195,7 @@ class Variavel(Node):
 
         _type, dimensions = var
         if dimensions < self.dimensions:
-            raise Exception('Trying to accesss bigger dimensions')
+            raise Exception('Trying to access bigger dimensions')
         self._type = _type
 
 
@@ -232,13 +234,17 @@ class ChamadaFuncao(Node):
                 raise Exception('Invalid types passed in function call')
 
 class Argumento(Node):
-    def __init__(self, _type, name):
+    def __init__(self, _type, name, dimensions=0):
         super(Argumento, self).__init__()
         self._type = _type
         self.name = name
+        self.dimensions = 0
+
+        scope.current[name] = (_type, dimensions)
 
     def validate(self):
         pass
+
 
 
 

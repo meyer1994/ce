@@ -1,0 +1,7 @@
+coverage==4.5.1
+flake8==3.6.0
+llvmlite==0.25.0
+mccabe==0.6.1
+ply==3.11
+pycodestyle==2.4.0
+pyflakes==2.0.0

@@ -4,15 +4,15 @@ import ply.lex as lex
 
 reserved = {
     # Types
-    'nada': 'TIPO_NADA',
-    'letra': 'TIPO_LETRA',
-    'letras': 'TIPO_LETRAS',
-    'curto': 'TIPO_CURTO',
-    'medio': 'TIPO_MEDIO',
-    'comprido': 'TIPO_COMPRIDO',
-    'flutua': 'TIPO_FLUTUA',
-    'duplo': 'TIPO_DUPLO',
-    'opiniao': 'TIPO_OPINIAO',
+    'nada': 'TYPE_NADA',
+    'letra': 'TYPE_LETRA',
+    'letras': 'TYPE_LETRAS',
+    'curto': 'TYPE_CURTO',
+    'medio': 'TYPE_MEDIO',
+    'comprido': 'TYPE_COMPRIDO',
+    'flutua': 'TYPE_FLUTUA',
+    'duplo': 'TYPE_DUPLO',
+    'opiniao': 'TYPE_OPINIAO',
 
     # Literals
     'concordo': 'LITERAL_CONCORDO',

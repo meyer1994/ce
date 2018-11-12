@@ -288,15 +288,15 @@ def p_parametros(p):
 
 def p_TIPO(p):
     '''
-    TIPO : TIPO_NADA
-         | TIPO_LETRA
-         | TIPO_LETRAS
-         | TIPO_CURTO
-         | TIPO_MEDIO
-         | TIPO_COMPRIDO
-         | TIPO_FLUTUA
-         | TIPO_DUPLO
-         | TIPO_OPINIAO
+    TIPO : TYPE_NADA
+         | TYPE_LETRA
+         | TYPE_LETRAS
+         | TYPE_CURTO
+         | TYPE_MEDIO
+         | TYPE_COMPRIDO
+         | TYPE_FLUTUA
+         | TYPE_DUPLO
+         | TYPE_OPINIAO
     '''
     types = {
         'nada': Types.NADA,

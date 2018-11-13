@@ -137,8 +137,6 @@ class DeclaracaoFuncao(Node):
             scope.functions[self.name] = self
 
         self.block.commands = self.args + self.block.commands
-        from pprint import pprint as print
-        print(self.block.commands)
         self.block.validate()
 
 

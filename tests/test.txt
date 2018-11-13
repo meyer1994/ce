@@ -26,11 +26,9 @@ medio soma(curto a, curto d) {
 }
 
 comprido outra_soma(comprido a, comprido b) {
-
     // q = 1; // erro: nao delcarado
-
-    // devolve outra_soma(-a, b);  // erro: ourta_soma nao declarada
-    devolve soma(-a, b);
+    // devolve soma2(-a, b); // erro: soma2 não declarada
+    devolve outra_soma(-a, b);
 }
 
 

@@ -1,47 +1,7 @@
 from abc import ABC, abstractmethod
-from enum import IntEnum, auto
 
-
-functions = {}
-
-
-class Scopes(object):
-    def __init__(self):
-        super(Scopes, self).__init__()
-        self.scopes = [ {} ]
-
-    def create(self):
-        self.scopes.append({})
-
-    def pop(self):
-        return self.scopes.pop()
-
-    @property
-    def current(self):
-        return self.scopes[-1]
-
-    def get(self, name):
-        for s in reversed(self.scopes):
-            if name in s:
-                return s[name]
-        return None
-
-
-scope = Scopes()
-
-
-class Types(IntEnum):
-    NUMERICO = auto()
-    OPINIAO = auto()
-    LETRA = auto()
-    LETRAS = auto()
-    NADA = auto()
-    FUNCAO = auto()
-
-class Operations(IntEnum):
-    NUMERICO = auto()
-    OPINIAO = auto()
-
+import scope
+from lang_types import Types, NumericTypes, cast, OperationTypes
 
 
 class Node(ABC):
@@ -59,21 +19,17 @@ class Node(ABC):
         return self._type
 
 
-
 class Bloco(Node):
     def __init__(self, commands=[]):
         super(Bloco, self).__init__()
         self.commands = commands
 
     def validate(self):
-        scope.create()
-        for var in self.commands:
-            if isinstance(var, DeclaracaoVariavel):
-                scope.current[var.name] = (var.type, var.dimensions)
-
+        scope.variables.create()
         for command in self.commands:
             command.validate()
-        scope.pop()
+        scope.variables.pop()
+
 
 class StatementSe(Node):
     def __init__(self, expression, block, else_block=None):
@@ -84,12 +40,13 @@ class StatementSe(Node):
 
     def validate(self):
         self.expression.validate()
-        if self.expression.type != Types.OPINIAO:
-            raise Exception('If expression should return a boolean')
-
+        if self.expression.type != Types.BOOLEAN:
+            error = self.expression.type
+            raise Exception('If expression must be a boolean. Got %s' % error)
         self.block.validate()
         if self.else_block:
             self.else_block.validate()
+
 
 class StatementPara(Node):
     def __init__(self, declaration, condition, step, block):
@@ -99,17 +56,15 @@ class StatementPara(Node):
         self.step = step
         self.block = block
 
-        var = (declaration.type, declaration.dimensions)
-        scope.current[declaration.name] = var
-
     def validate(self):
         self.declaration.validate()
         self.condition.validate()
-        if self.condition.type != Types.OPINIAO:
-            raise Exception('For loop condition be boolean. Got %s' % self.condition.type)
-
+        if self.condition.type != Types.BOOLEAN:
+            error = self.condition.type
+            raise Exception('For loop condition be boolean. Got %s' % error)
         self.step.validate()
         self.block.validate()
+
 
 class StatementEnquanto(Node):
     def __init__(self, condition, block):
@@ -119,13 +74,14 @@ class StatementEnquanto(Node):
 
     def validate(self):
         self.condition.validate()
-        if self.condition.type != Types.OPINIAO:
-            raise Exception('While condition must be boolean. Got %s' % self.condition.type)
-
+        if self.condition.type != Types.BOOLEAN:
+            error = self.condition.type
+            raise Exception('While condition must be boolean. Got %s' % error)
         self.block.validate()
 
+
 class StatementCaso(Node):
-    def __init__(self, value, case_blocks):
+    def __init__(self, value, case_blocks=[]):
         super(StatementCaso, self).__init__()
         self.value = value
         self.case_blocks = case_blocks
@@ -134,6 +90,7 @@ class StatementCaso(Node):
         self.value.validate()
         for block in self.case_blocks:
             block.validate()
+
 
 class StatementSeja(Node):
     def __init__(self, value, block):
@@ -146,7 +103,6 @@ class StatementSeja(Node):
         self.block.validate()
 
 
-
 class DeclaracaoVariavel(Node):
     def __init__(self, _type, name, expression=None, dimensions=0):
         super(DeclaracaoVariavel, self).__init__()
@@ -154,16 +110,17 @@ class DeclaracaoVariavel(Node):
         self.name = name
         self.expression = expression
         self.dimensions = dimensions
-        if self.name in scope.current:
-            raise Exception('Redeclaration of variable "%s"' % self.name)
 
     def validate(self):
+        if self.name in scope.variables.current:
+            raise Exception('Variable "%s" already declared' % self.name)
+        else:
+            scope.variables.add(self)
 
-        if self.expression:
+        if self.expression is not None:
             self.expression.validate()
-            if self.expression.type != self.type:
-                error = '(%s and %s)' % (self.type, self.expression.type)
-                raise Exception('Assigning different types %s' % error)
+            cast(self.expression.type, self.type)
+
 
 class DeclaracaoFuncao(Node):
     def __init__(self, _type, name, block, args=[]):
@@ -173,17 +130,16 @@ class DeclaracaoFuncao(Node):
         self.args = args
         self.block = block
 
-        if name in functions:
-            raise Exception('Redeclaration of function %s' % name)
-        functions[name] = (_type, args)
-
-        for arg in args:
-            scope.current[arg.name] = (arg.type, arg.dimensions)
-
-
     def validate(self):
-        self.block.validate()
+        if self.name in scope.functions:
+            raise Exception('Function %s already declared' % self.name)
+        else:
+            scope.functions[self.name] = self
 
+        self.block.commands = self.args + self.block.commands
+        from pprint import pprint as print
+        print(self.block.commands)
+        self.block.validate()
 
 
 class Variavel(Node):
@@ -193,14 +149,14 @@ class Variavel(Node):
         self.dimensions = dimensions
 
     def validate(self):
-        var = scope.get(self.name)
+        var = scope.variables.get(self.name)
         if var is None:
             raise Exception('Variable "%s" not declared' % self.name)
 
-        _type, dimensions = var
-        if dimensions < self.dimensions:
-            raise Exception('Trying to access bigger dimensions')
-        self._type = _type
+        if var.dimensions < self.dimensions:
+            raise Exception('Trying to access bigger array dimensions')
+        self._type = var.type
+
 
 class Atribuicao(Node):
     def __init__(self, var, operation):
@@ -209,13 +165,9 @@ class Atribuicao(Node):
         self.operation = operation
 
     def validate(self):
-        self.operation.validate()
         self.var.validate()
-
-        if self.var.type != self.operation.type:
-            types = '%s to %s' % (self.operation.type, self.var.type)
-            raise Exception('Trying to attribute %s' % types)
-
+        self.operation.validate()
+        cast(self.var.type, self.operation.type)
 
 
 class ChamadaFuncao(Node):
@@ -225,34 +177,23 @@ class ChamadaFuncao(Node):
         self.args = args
 
     def validate(self):
-        if self.name not in functions:
+        if self.name not in scope.functions:
             raise Exception('Function "%s" not delcared' % self.name)
+        function = scope.functions[self.name]
 
-        _type, args = functions[self.name]
-        self._type = _type
-
-        if len(args) != len(self.args):
-            error = '%d and %d' % (len(args), len(self.args))
+        if len(function.args) != len(self.args):
+            error = '%d, %d' % (len(function.args), len(self.args))
             raise Exception('Number of parameters is incorrect (%s)' % error)
 
-        for arg, par in zip(args, self.args):
-            par.validate()
-            arg.validate()
-            if arg.type != par.type:
-                raise Exception('Invalid types passed in function call')
-
-class Argumento(Node):
-    def __init__(self, _type, name, dimensions=0):
-        super(Argumento, self).__init__()
-        self._type = _type
-        self.name = name
-        self.dimensions = 0
-
-        scope.current[name] = (_type, dimensions)
-
-    def validate(self):
-        pass
-
+        for argument, parameter in zip(function.args, self.args):
+            parameter.validate()
+            try:
+                cast(parameter.type, argument.type)
+            except Exception:
+                type_arg = argument.type
+                type_par = parameter.type
+                error = '%s, %s' % (type_arg, type_par)
+                raise Exception('Types do not match (%s)' % error)
 
 
 class OperacaoBinaria(Node):
@@ -263,25 +204,22 @@ class OperacaoBinaria(Node):
         self.right = right
 
     def validate(self):
-        # Check for valid operation
-        if not isinstance(self.operation, Operations):
-            raise Exception('Invalid operation. Got %s' % self.operation)
-
-        # Validate children
         self.left.validate()
         self.right.validate()
 
-        if self.operation == Operations.OPINIAO:
-            return self._boolean_validate()
+        if self.operation == OperationTypes.BOOLEAN:
+            self._boolean()
+            self._type = Types.BOOLEAN
+        else:
+            self._type = cast(self.left.type, self.right.type)
 
-        if self.left.type == Types.NUMERICO and self.right.type == Types.NUMERICO:
-            self._type = Types.NUMERICO
+    def _boolean(self):
+        left = self.left.type
+        right = self.right.type
+        if not (left in NumericTypes and right in NumericTypes):
+            error = '(%s, %s)' % (left, right)
+            raise Exception('Both sides must be numeric. Got %s' % error)
 
-    def _boolean_validate(self):
-        if self.right.type != self.left.type:
-            types = '%s and %s' % (self.left.type, self.right.type)
-            raise Exception('Values types do not match (%s)' % types)
-        self._type = Types.OPINIAO
 
 class OperacaoUnaria(Node):
     def __init__(self, operation, right):
@@ -291,14 +229,9 @@ class OperacaoUnaria(Node):
 
     def validate(self):
         self.right.validate()
-
-        # Check for valid type
-        if self.right.type != Operations.NUMERICO:
-            raise Exception('Operations can only be performed with numbers')
-
-        # Set own type
+        if self.right.type not in NumericTypes:
+            raise Exception('Unary operation must be with numbers')
         self._type = self.right.type
-
 
 
 class LiteralValor(Node):

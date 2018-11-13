@@ -54,6 +54,7 @@ def p_comando(p):
             | declaracao_funcao
     '''
     p[0] = p[1]
+    print(p[0])
 
 
 def p_declaracao_variavel(p):
@@ -119,17 +120,13 @@ def p_argumento(p):
 
 
 def p_atribuicao(p):
-    '''
-    atribuicao : ID '=' operacao
-    '''
+    ''' atribuicao : ID '=' operacao '''
     var = Variavel(p[1])
     p[0] = Atribuicao(var, p[3])
 
 
 def p_atribuicao_array(p):
-    '''
-    atribuicao : ID array '=' operacao
-    '''
+    ''' atribuicao : ID array '=' operacao '''
     dimensions = len(p[2])
     var = Variavel(p[1], dimensions)
     p[0] = Atribuicao(var, p[4])
@@ -194,9 +191,7 @@ def p_for_statement(p):
 
 
 def p_while_statement(p):
-    '''
-    while_statement : STATEMENT_WHILE '(' operacao ')' bloco
-    '''
+    ''' while_statement : STATEMENT_WHILE '(' operacao ')' bloco '''
     p[0] = StatementEnquanto(p[3], p[5])
 
 
@@ -219,9 +214,7 @@ def p_switch_cases(p):
 
 
 def p_return_statement(p):
-    '''
-    return_statement : STATEMENT_RETURN operacao
-    '''
+    ''' return_statement : STATEMENT_RETURN operacao '''
     p[0] = p[2]
 
 
@@ -258,37 +251,27 @@ def p_operacao_booleana(p):
 
 
 def p_operacao_minus(p):
-    '''
-    operacao : '-' operacao %prec UMINUS
-    '''
+    ''' operacao : '-' operacao %prec UMINUS '''
     p[0] = OperacaoUnaria(OperationTypes.NUMERIC, p[2])
 
 
 def p_operacao_literal(p):
-    '''
-    operacao : LITERAL
-    '''
+    ''' operacao : LITERAL '''
     p[0] = p[1]
 
 
 def p_operacao_variavel(p):
-    '''
-    operacao : ID
-    '''
+    ''' operacao : ID '''
     p[0] = Variavel(p[1])
 
 
 def p_operacao_variavel_array(p):
-    '''
-    operacao : ID array
-    '''
+    ''' operacao : ID array '''
     p[0] = Variavel(p[1], len(p[2]))
 
 
 def p_operacao_parenteses(p):
-    '''
-    operacao : '(' operacao ')'
-    '''
+    ''' operacao : '(' operacao ')' '''
     p[0] = p[1]
 
 
@@ -341,44 +324,32 @@ def p_TIPO(p):
 
 
 def p_LITERAL_numerico_medio(p):
-    '''
-    LITERAL : LITERAL_INT
-    '''
+    ''' LITERAL : LITERAL_INT '''
     p[0] = LiteralValor(p[1], Types.INT)
 
 
 def p_LITERAL_numerico(p):
-    '''
-    LITERAL : LITERAL_FLOAT
-    '''
+    ''' LITERAL : LITERAL_FLOAT '''
     p[0] = LiteralValor(p[1], Types.FLOAT)
 
 
 def p_LITERAL_letra(p):
-    '''
-    LITERAL : LITERAL_CHAR
-    '''
+    ''' LITERAL : LITERAL_CHAR '''
     p[0] = LiteralValor(p[1], Types.CHAR)
 
 
 def p_LITERAL_letras(p):
-    '''
-    LITERAL : LITERAL_STRING
-    '''
+    ''' LITERAL : LITERAL_STRING '''
     p[0] = LiteralValor(p[1], Types.STRING)
 
 
 def p_LITERAL_concordo(p):
-    '''
-    LITERAL : LITERAL_TRUE
-    '''
+    ''' LITERAL : LITERAL_TRUE '''
     p[0] = LiteralValor(True, Types.BOOLEAN)
 
 
 def p_LITERAL_discordo(p):
-    '''
-    LITERAL : LITERAL_FALSE
-    '''
+    ''' LITERAL : LITERAL_FALSE '''
     p[0] = LiteralValor(False, Types.BOOLEAN)
 
 

@@ -71,8 +71,7 @@ def p_var_declaration(p):
 
 def p_var_declaration_array(p):
     ''' var_declaration : TYPE ID array '''
-    dim = len(p[3])
-    p[0] = DeclVariable(p[1], p[2], dimensions=dim)
+    p[0] = DeclVariable(p[1], p[2], dims=p[3])
 
 
 def p_array(p):
@@ -114,10 +113,9 @@ def p_argumento(p):
               | TYPE ID array
     '''
     if len(p) == 3:
-        p[0] = DeclVariable(p[1], p[2], dimensions=0)
+        p[0] = DeclVariable(p[1], p[2])
     else:
-        dim = len(p[3])
-        p[0] = DeclVariable(p[1], p[2], dimensions=dim)
+        p[0] = DeclVariable(p[1], p[2], dims=p[3])
 
 
 def p_assign(p):

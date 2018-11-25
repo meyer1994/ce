@@ -56,14 +56,14 @@ def t_ignore_newline(t):
 
 def t_LITERAL_CHAR(t):
     r"'.?'"
-    t.value = t.value[1]
+    t.value = t.value[1].encode()
     return t
 
 
 def t_LITERAL_STRING(t):
     r'"[^"]*"'
     val = t.value
-    t.value = str(val[1:len(val)-1])
+    t.value = str(val[1:len(val)-1]).encode()
     return t
 
 

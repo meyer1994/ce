@@ -22,11 +22,8 @@ class Scopes(object):
                 return s[name]
         return None
 
-    def add(self, decl):
-        self.current[decl.name] = decl
-
     def __contains__(self, item):
-        return item.name in self.current
+        return item in self.current
 
     def __getitem__(self, key):
         return self.current[key]

@@ -19,6 +19,10 @@ class OpBin(Node):
         else:
             self.type = cast(self.left.type, self.right.type)
 
+    def generate(self, builder, scope):
+        left = self.left.generate(builder, scope)
+        right = self.right.generate(builder, scope)
+        return builder.add(left, right)
 
     def _boolean(self):
         left = self.left.type
@@ -39,3 +43,8 @@ class OpUn(Node):
         if self.right.type not in NumericTypes:
             raise Exception('Unary operation must be with numbers')
         self.type = self.right.type
+
+    def generate(self, builder, scope):
+        zero = self.right.type.value(0)
+        right = self.right.generate(builder, scope)
+        return builder.sub(zero, right)

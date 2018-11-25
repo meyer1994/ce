@@ -1,3 +1,5 @@
+from functools import reduce
+
 from llvmlite import ir
 
 from ce.semantic.node import Node
@@ -5,12 +7,12 @@ from ce.types import cast
 
 
 class DeclVariable(Node):
-    def __init__(self, typ, name, expression=None, dimensions=0):
+    def __init__(self, typ, name, expr=None, dims=[]):
         super(DeclVariable, self).__init__()
         self.type = typ
         self.name = name
-        self.expression = expression
-        self.dimensions = dimensions
+        self.expr = expr
+        self.dims = dims
 
     def validate(self, scope):
         if self.name in scope.current:
@@ -18,13 +20,19 @@ class DeclVariable(Node):
         else:
             scope[self.name] = self
 
-        if self.expression is not None:
-            self.expression.validate(scope)
-            cast(self.expression.type, self.type)
+        if self.expr is not None:
+            self.expr.validate(scope)
+            cast(self.expr.type, self.type)
 
     def generate(self, builder, scope):
-        ptr = builder.alloca(self.type.value, name=self.name)
+        size = reduce(lambda x, y: x * y.value, self.dims, 1)
+        ptr = builder.alloca(self.type.value, size, self.name)
         scope.current[self.name] = ptr
+
+        if self.expr is None:
+            return ptr
+        expr = self.expr.generate(builder, scope)
+        builder.store(expr, ptr)
         return ptr
 
 
@@ -59,13 +67,16 @@ class DeclFunction(Node):
         name = '%s_block' % self.name
         block = func.append_basic_block(name=name)
 
-        builder = ir.IRBuilder(block)
         args = []
         for i, arg in enumerate(func.args):
             arg.name = self.args[i].name
             args.append(arg)
-            scope.current[arg.name] = arg
         func.args = tuple(args)
 
-        self.block.generate(builder, scope)
+        with scope() as scop:
+            builder = ir.IRBuilder(block)
+            for arg in self.args:
+                ptr = builder.alloca(arg.type.value)
+                scop[arg.name] = ptr
+            self.block.generate(builder, scop)
         return builder

@@ -5,6 +5,7 @@ letra c = 'c';
 letras s = "abc";
 
 curto arr[1][2];
+/*
 // arr[1][2][3]; // erro: mais dimensoes
 
 // medio d = 'a'; // erro: tipos diferentes
@@ -41,3 +42,4 @@ nada loop(curto a) {
         // outra_soma(a, 2, 2); // erro: quantidade de parametros errada
     }
 }
+*/

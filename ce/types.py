@@ -51,3 +51,39 @@ def cast(type_a, type_b):
         raise Exception('Incompatible types (%s, %s)' % (type_a, type_b))
 
     return types.pop()
+
+
+# def get_integer_op(operation):
+#     ''' Gets the correct builder operation '''
+#     table = {
+#         OperationTypes.LE: 'icmp_signed',
+#         OperationTypes.GE: 'icmp_signed',
+#         OperationTypes.LT: 'icmp_signed',
+#         OperationTypes.GT: 'icmp_signed',
+#         OperationTypes.EQ: 'icmp_signed',
+#         OperationTypes.NE: 'icmp_signed',
+#         OperationTypes.ADD: 'add',
+#         OperationTypes.SUB: 'sub',
+#         OperationTypes.MUL: 'mul',
+#         OperationTypes.DIV: 'sdiv',
+#         OperationTypes.MOD: 'srem'
+#     }
+#     return table[operation]
+
+
+# def get_float_op(operation):
+#     ''' Gets the correct builder operation '''
+#     table = {
+#         OperationTypes.LE: 'fcmp_signed',
+#         OperationTypes.GE: 'fcmp_signed',
+#         OperationTypes.LT: 'fcmp_signed',
+#         OperationTypes.GT: 'fcmp_signed',
+#         OperationTypes.EQ: 'fcmp_signed',
+#         OperationTypes.NE: 'fcmp_signed',
+#         OperationTypes.ADD: 'fadd',
+#         OperationTypes.SUB: 'fsub',
+#         OperationTypes.MUL: 'fmul',
+#         OperationTypes.DIV: 'fdiv',
+#         OperationTypes.MOD: 'frem'
+#     }
+#     return table[operation]

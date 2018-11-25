@@ -9,7 +9,7 @@ class Node(ABC):
     def validate(self, scope):
         pass
 
-    def generate(self):
+    def generate(self, builder, scope):
         pass
 
     @property

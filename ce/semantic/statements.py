@@ -13,6 +13,12 @@ class Block(Node):
             command.validate(scope)
         scope.pop()
 
+    def generate(self, builder, scope):
+        scope.create()
+        for command in self.commands:
+            command.generate(builder, scope)
+        scope.pop()
+
 
 class If(Node):
     def __init__(self, expression, block, else_block=None):

@@ -273,7 +273,7 @@ def p_expression_array(p):
 
 def p_expression_parens(p):
     ''' expression : '(' expression ')' '''
-    p[0] = p[1]
+    p[0] = p[2]
 
 
 def p_expression_call(p):

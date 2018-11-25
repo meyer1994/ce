@@ -16,7 +16,8 @@ medio soma(medio a, medio d) {
     se (concordo) {
 
         medio q = 1;
-        devolve 0;
+        // return void
+        devolve;
     }
 
     // se (b + 0) {  // erro: operacao nao retorna booleana
@@ -32,6 +33,9 @@ medio soma(medio a, medio d) {
 comprido outra_soma(comprido a, comprido b) {
     // q = 1; // erro: nao delcarado
     // devolve soma2(-a, b); // erro: soma2 não declarada
+    enquanto (concordo) {
+        soma(1, 2);
+    }
     devolve outra_soma(-a, b);
 }
 
@@ -44,6 +48,13 @@ nada loop(medio a) {
         // outra_soma(a, 'a'); // erro: tipagem errada
         // outra_soma(a, 2, 2); // erro: quantidade de parametros errada
     }
+
+    // switch
+    caso (a) {
+        seja (1) {
+            devolve;
+        }
+        seja(2) {}
+        seja(3) {}
+    }
 }
-/*
-*/

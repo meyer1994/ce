@@ -3,31 +3,40 @@ from ce.types import cast
 
 
 class Var(Node):
-    def __init__(self, name, dimensions=0):
+    def __init__(self, name, dims=[]):
         super(Var, self).__init__()
         self.name = name
-        self.dimensions = dimensions
+        self.dims = dims
 
     def validate(self, scope):
         var = scope.get(self.name)
         if var is None:
             raise Exception('Variable "%s" not declared' % self.name)
 
-        if var.dimensions < self.dimensions:
+        if len(var.dims) < len(self.dims):
             raise Exception('Trying to access bigger array dimensions')
-        self._type = var.type
+        self.type = var.type
+
+    def generate(self, builder, scope):
+        ptr = scope.get(self.name)
+        return builder.load(ptr)
 
 
 class Assign(Node):
-    def __init__(self, var, operation):
+    def __init__(self, var, expr):
         super(Assign, self).__init__()
         self.var = var
-        self.operation = operation
+        self.expr = expr
 
     def validate(self, scope):
         self.var.validate(scope)
-        self.operation.validate(scope)
-        cast(self.var.type, self.operation.type)
+        self.expr.validate(scope)
+        cast(self.var.type, self.expr.type)
+
+    def generate(self, builder, scope):
+        ptr = scope.get(self.var.name)
+        expr = self.expr.generate(builder, scope)
+        return builder.store(expr, ptr)
 
 
 class Call(Node):
@@ -58,10 +67,13 @@ class Call(Node):
 
 
 class Literal(Node):
-    def __init__(self, value, _type):
+    def __init__(self, value, typ):
         super(Literal, self).__init__()
         self.value = value
-        self._type = _type
+        self.type = typ
 
     def validate(self, scope):
         pass
+
+    def generate(self, _, scope):
+        return self.type.value(self.value)

@@ -3,7 +3,7 @@ compile:
 	python -m compileall ce tests
 
 test: clean
-	python main.py -f tests/test.txt
+	python main.py -f example.ce
 
 clean:
 	rm -vf ce/parser.out ce/parsetab.py

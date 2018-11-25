@@ -3,7 +3,8 @@ import ply.yacc as yacc
 from ce.lexer import tokens, literals  # NOQA
 
 from ce.semantic.statements import Block, If, For, While, Switch, Case, Call, \
-    Var, Assign, DeclVariable, DeclFunction, Literal, OpBin, OpUn
+    Var, Assign, Literal, OpBin, OpUn
+from ce.semantic.declarations import DeclVariable, DeclFunction
 
 from ce.types import Types, OperationTypes
 from ce.scope import Scopes

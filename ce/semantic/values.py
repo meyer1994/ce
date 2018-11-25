@@ -65,6 +65,11 @@ class Call(Node):
                 error = '%s, %s' % (type_arg, type_par)
                 raise Exception('Types do not match (%s)' % error)
 
+    def generate(self, builder, scope):
+        func = scope.get(self.name)
+        args = [a.generate(builder, scope) for a in self.args]
+        return builder.call(func, args)
+
 
 class Literal(Node):
     def __init__(self, value, typ):

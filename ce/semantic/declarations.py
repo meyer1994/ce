@@ -64,6 +64,8 @@ class DeclFunction(Node):
         module = ir.Module(name=name)
 
         func = ir.Function(module, fnty, name=self.name)
+        scope[self.name] = func
+
         name = '%s_block' % self.name
         block = func.append_basic_block(name=name)
 

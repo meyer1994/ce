@@ -38,4 +38,3 @@ class OpUn(Node):
         if self.right.type not in NumericTypes:
             raise Exception('Unary operation must be with numbers')
         self._type = self.right.type
-

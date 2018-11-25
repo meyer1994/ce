@@ -8,16 +8,12 @@ class Block(Node):
         self.commands = commands
 
     def validate(self, scope):
-        scope.create()
         for command in self.commands:
             command.validate(scope)
-        scope.pop()
 
     def generate(self, builder, scope):
-        scope.create()
-        for command in self.commands:
-            command.generate(builder, scope)
-        scope.pop()
+        results = [c.generate(builder, scope) for c in self.commands]
+        return results
 
 
 class If(Node):
@@ -32,9 +28,13 @@ class If(Node):
         if self.expression.type != Types.BOOLEAN:
             error = self.expression.type
             raise Exception('If expression must be a boolean. Got %s' % error)
-        self.block.validate(scope)
+
+        with scope() as scop:
+            self.block.validate(scop)
+
         if self.else_block:
-            self.else_block.validate(scope)
+            with scope() as scop:
+                self.else_block.validate(scope)
 
 
 class For(Node):
@@ -46,13 +46,15 @@ class For(Node):
         self.block = block
 
     def validate(self, scope):
-        self.declaration.validate(scope)
-        self.condition.validate(scope)
-        if self.condition.type != Types.BOOLEAN:
-            error = self.condition.type
-            raise Exception('For loop condition be boolean. Got %s' % error)
-        self.step.validate(scope)
-        self.block.validate(scope)
+        with scope() as scop:
+            self.declaration.validate(scop)
+            self.condition.validate(scop)
+            if self.condition.type != Types.BOOLEAN:
+                typ = self.condition.type
+                msg = 'For loop condition be boolean. Got %s' % typ
+                raise Exception(msg)
+            self.step.validate(scop)
+            self.block.validate(scop)
 
 
 class While(Node):
@@ -66,7 +68,8 @@ class While(Node):
         if self.condition.type != Types.BOOLEAN:
             error = self.condition.type
             raise Exception('While condition must be boolean. Got %s' % error)
-        self.block.validate(scope)
+        with scope() as scop:
+            self.block.validate(scop)
 
 
 class Switch(Node):
@@ -89,4 +92,5 @@ class Case(Node):
 
     def validate(self, scope):
         self.value.validate(scope)
-        self.block.validate(scope)
+        with scope() as scop:
+            self.block.validate(scop)

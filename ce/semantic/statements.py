@@ -180,8 +180,12 @@ class Return(Node):
         self.expr = expr
 
     def validate(self, scope):
+        if self.expr is None:
+            return
         self.expr.validate(scope)
 
     def generate(self, builder, scope):
+        if self.expr is None:
+            return builder.ret_void()
         expr = self.expr.generate(builder, scope)
         return builder.ret(expr)

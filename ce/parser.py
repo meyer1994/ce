@@ -1,10 +1,11 @@
 import ply.yacc as yacc
 
-from ce.lexer import tokens, literals  # NOQA
+from ce.lexer import tokens  # NOQA
 
-from ce.semantic.statements import Block, If, For, While, Switch, Case, Call, \
-    Var, Assign, Literal, OpBin, OpUn
+from ce.semantic.expressions import OpBin, OpUn
+from ce.semantic.values import Call, Var, Assign, Literal
 from ce.semantic.declarations import DeclVariable, DeclFunction
+from ce.semantic.statements import Block, If, For, While, Switch, Case
 
 from ce.types import Types, OperationTypes
 from ce.scope import Scopes

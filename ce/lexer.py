@@ -5,30 +5,30 @@ import ply.lex as lex
 
 reserved = {
     # Types
-    'nada': 'TYPE_VOID',
-    'letra': 'TYPE_CHAR',
-    'letras': 'TYPE_STRING',
-    'curto': 'TYPE_SHORT',
-    'medio': 'TYPE_INT',
-    'comprido': 'TYPE_LONG',
-    'flutua': 'TYPE_FLOAT',
-    'duplo': 'TYPE_DOUBLE',
-    'opiniao': 'TYPE_BOOLEAN',
+    'nada': 'VOID',
+    'letra': 'CHAR',
+    'letras': 'STRING',
+    'curto': 'SHORT',
+    'medio': 'INT',
+    'comprido': 'LONG',
+    'flutua': 'FLOAT',
+    'duplo': 'DOUBLE',
+    'opiniao': 'BOOLEAN',
 
     # Literals
     'concordo': 'LITERAL_TRUE',
     'discordo': 'LITERAL_FALSE',
 
     # Structures
-    'se': 'STATEMENT_IF',
-    'senao': 'STATEMENT_ELSE',
-    'para': 'STATEMENT_FOR',
-    'enquanto': 'STATEMENT_WHILE',
-    'caso': 'STATEMENT_SWITCH',
-    'seja': 'STATEMENT_CASE',
+    'se': 'IF',
+    'senao': 'ELSE',
+    'para': 'FOR',
+    'enquanto': 'WHILE',
+    'caso': 'SWITCH',
+    'seja': 'CASE',
 
     # Ohters
-    'devolve': 'STATEMENT_RETURN',
+    'devolve': 'RETURN',
 }
 
 tokens = [

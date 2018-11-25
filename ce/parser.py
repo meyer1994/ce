@@ -8,7 +8,6 @@ from ce.semantic.declarations import DeclVariable, DeclFunction
 from ce.semantic.statements import Block, If, For, While, Switch, Case
 
 from ce.types import Types, OperationTypes
-from ce.scope import Scopes
 
 
 precedence = [
@@ -19,7 +18,7 @@ precedence = [
     ('right', 'UMINUS')
 ]
 
-start = 'comeco'
+start = 'begin'
 
 
 def p_empty(p):
@@ -27,21 +26,21 @@ def p_empty(p):
     pass
 
 
-def p_comeco(p):
+def p_begin(p):
     '''
-    comeco : comandos
+    begin : commands
            | empty
     '''
-    if p[1] is not None:
-        b = Block(p[1])
-        scope = Scopes()
-        b.validate(scope)
+    if p[1] is None:
+        p[0] = Block()
+    else:
+        p[0] = Block(p[1])
 
 
-def p_comandos(p):
+def p_commands(p):
     '''
-    comandos : comandos comando
-             | comando
+    commands : commands command
+             | command
     '''
     if len(p) == 3:
         p[0] = p[1] + [p[2]]
@@ -49,21 +48,20 @@ def p_comandos(p):
         p[0] = [p[1]]
 
 
-def p_comando(p):
+def p_command(p):
     '''
-    comando : declaracao_variavel ';'
-            | atribuicao ';'
-            | operacao ';'
+    command : variable_declaration ';'
+            | assign ';'
+            | expression ';'
             | declaracao_funcao
     '''
     p[0] = p[1]
-    print(p[0])
 
 
-def p_declaracao_variavel(p):
+def p_variable_declaration(p):
     '''
-    declaracao_variavel : TIPO ID '=' operacao
-                        | TIPO ID
+    variable_declaration : TYPE ID '=' expression
+                         | TYPE ID
     '''
     if len(p) == 5:
         p[0] = DeclVariable(p[1], p[2], p[4])
@@ -71,16 +69,16 @@ def p_declaracao_variavel(p):
         p[0] = DeclVariable(p[1], p[2])
 
 
-def p_declaracao_variavel_array(p):
-    ''' declaracao_variavel : TIPO ID array '''
+def p_variable_declaration_array(p):
+    ''' variable_declaration : TYPE ID array '''
     dim = len(p[3])
     p[0] = DeclVariable(p[1], p[2], dimensions=dim)
 
 
 def p_array(p):
     '''
-    array : array '[' operacao ']'
-          | '[' operacao ']'
+    array : array '[' expression ']'
+          | '[' expression ']'
     '''
     if len(p) == 5:
         p[0] = p[1] + [p[3]]
@@ -90,8 +88,8 @@ def p_array(p):
 
 def p_declaracao_funcao(p):
     '''
-    declaracao_funcao : TIPO ID '(' argumentos_funcao ')' bloco
-                      | TIPO ID '(' ')' bloco
+    declaracao_funcao : TYPE ID '(' argumentos_funcao ')' block
+                      | TYPE ID '(' ')' block
     '''
     if len(p) == 7:
         p[0] = DeclFunction(p[1], p[2], args=p[4], block=p[6])
@@ -112,8 +110,8 @@ def p_argumentos_funcao(p):
 
 def p_argumento(p):
     '''
-    argumento : TIPO ID
-              | TIPO ID array
+    argumento : TYPE ID
+              | TYPE ID array
     '''
     if len(p) == 3:
         p[0] = DeclVariable(p[1], p[2], dimensions=0)
@@ -122,22 +120,22 @@ def p_argumento(p):
         p[0] = DeclVariable(p[1], p[2], dimensions=dim)
 
 
-def p_atribuicao(p):
-    ''' atribuicao : ID '=' operacao '''
+def p_assign(p):
+    ''' assign : ID '=' expression '''
     var = Var(p[1])
     p[0] = Assign(var, p[3])
 
 
-def p_atribuicao_array(p):
-    ''' atribuicao : ID array '=' operacao '''
+def p_assign_array(p):
+    ''' assign : ID array '=' expression '''
     dimensions = len(p[2])
     var = Var(p[1], dimensions)
     p[0] = Assign(var, p[4])
 
 
-def p_bloco(p):
+def p_block(p):
     '''
-    bloco : '{' statements '}'
+    block : '{' statements '}'
           | '{' '}'
     '''
     if len(p) == 4:
@@ -163,9 +161,9 @@ def p_statement(p):
               | for_statement
               | while_statement
               | switch_statement
-              | operacao ';'
-              | atribuicao ';'
-              | declaracao_variavel ';'
+              | expression ';'
+              | assign ';'
+              | variable_declaration ';'
               | return_statement ';'
     '''
     p[0] = p[1]
@@ -173,8 +171,8 @@ def p_statement(p):
 
 def p_if_statement(p):
     '''
-    if_statement : STATEMENT_IF '(' operacao ')' bloco
-    if_statement : STATEMENT_IF '(' operacao ')' bloco STATEMENT_ELSE bloco
+    if_statement : IF '(' expression ')' block
+    if_statement : IF '(' expression ')' block ELSE block
     '''
     if len(p) == 6:
         p[0] = If(p[3], p[5])
@@ -184,7 +182,7 @@ def p_if_statement(p):
 
 def p_for_statement(p):
     '''
-    for_statement : STATEMENT_FOR '(' declaracao_variavel ';' operacao ';' atribuicao ')' bloco
+    for_statement : FOR '(' variable_declaration ';' expression ';' assign ')' block
     '''
     declaration = p[3]
     condition = p[5]
@@ -194,21 +192,21 @@ def p_for_statement(p):
 
 
 def p_while_statement(p):
-    ''' while_statement : STATEMENT_WHILE '(' operacao ')' bloco '''
+    ''' while_statement : WHILE '(' expression ')' block '''
     p[0] = While(p[3], p[5])
 
 
 def p_switch_statement(p):
     '''
-    switch_statement : STATEMENT_SWITCH '(' operacao ')' '{' switch_cases '}'
+    switch_statement : SWITCH '(' expression ')' '{' switch_cases '}'
     '''
     p[0] = Switch(p[3], p[6])
 
 
 def p_switch_cases(p):
     '''
-    switch_cases : switch_cases STATEMENT_CASE '(' operacao ')' bloco
-                 | STATEMENT_CASE '(' operacao ')' bloco
+    switch_cases : switch_cases CASE '(' expression ')' block
+                 | CASE '(' expression ')' block
     '''
     if len(p) == 7:
         p[0] = p[1] + [Case(p[4], p[6])]
@@ -217,20 +215,20 @@ def p_switch_cases(p):
 
 
 def p_return_statement(p):
-    ''' return_statement : STATEMENT_RETURN operacao '''
+    ''' return_statement : RETURN expression '''
     p[0] = p[2]
 
 
-def p_operacao_numerica(p):
+def p_expression_numerica(p):
     '''
-    operacao : operacao '*' operacao
-             | operacao '/' operacao
-             | operacao '%' operacao
-             | operacao '+' operacao
-             | operacao '-' operacao
-             | operacao '&' operacao
-             | operacao '^' operacao
-             | operacao '|' operacao
+    expression : expression '*' expression
+               | expression '/' expression
+               | expression '%' expression
+               | expression '+' expression
+               | expression '-' expression
+               | expression '&' expression
+               | expression '^' expression
+               | expression '|' expression
     '''
     left = p[1]
     op = OperationTypes.NUMERIC
@@ -238,14 +236,14 @@ def p_operacao_numerica(p):
     p[0] = OpBin(left, op, right)
 
 
-def p_operacao_booleana(p):
+def p_expression_boolean(p):
     '''
-    operacao : operacao '>' operacao
-             | operacao '<' operacao
-             | operacao OP_GE operacao
-             | operacao OP_LE operacao
-             | operacao OP_EQ operacao
-             | operacao OP_NE operacao
+    expression : expression '>' expression
+               | expression '<' expression
+               | expression OP_GE expression
+               | expression OP_LE expression
+               | expression OP_EQ expression
+               | expression OP_NE expression
     '''
     left = p[1]
     op = OperationTypes.BOOLEAN
@@ -253,35 +251,35 @@ def p_operacao_booleana(p):
     p[0] = OpBin(left, op, right)
 
 
-def p_operacao_minus(p):
-    ''' operacao : '-' operacao %prec UMINUS '''
+def p_expression_minus(p):
+    ''' expression : '-' expression %prec UMINUS '''
     p[0] = OpUn(OperationTypes.NUMERIC, p[2])
 
 
-def p_operacao_literal(p):
-    ''' operacao : LITERAL '''
+def p_expression_literal(p):
+    ''' expression : LITERAL '''
     p[0] = p[1]
 
 
-def p_operacao_variavel(p):
-    ''' operacao : ID '''
+def p_expression_var(p):
+    ''' expression : ID '''
     p[0] = Var(p[1])
 
 
-def p_operacao_variavel_array(p):
-    ''' operacao : ID array '''
+def p_expression_array(p):
+    ''' expression : ID array '''
     p[0] = Var(p[1], len(p[2]))
 
 
-def p_operacao_parenteses(p):
-    ''' operacao : '(' operacao ')' '''
+def p_expression_parens(p):
+    ''' expression : '(' expression ')' '''
     p[0] = p[1]
 
 
-def p_operacao_chamada_funcao(p):
+def p_expression_call(p):
     '''
-    operacao : ID '(' parametros ')'
-             | ID '(' ')'
+    expression : ID '(' parameters ')'
+               | ID '(' ')'
     '''
     if len(p) == 5:
         p[0] = Call(p[1], p[3])
@@ -289,10 +287,10 @@ def p_operacao_chamada_funcao(p):
         p[0] = Call(p[1])
 
 
-def p_parametros(p):
+def p_parameters(p):
     '''
-    parametros : parametros ',' operacao
-               | operacao
+    parameters : parameters ',' expression
+               | expression
     '''
     if len(p) == 4:
         p[0] = p[1] + [p[3]]
@@ -300,17 +298,17 @@ def p_parametros(p):
         p[0] = [p[1]]
 
 
-def p_TIPO(p):
+def p_TYPE(p):
     '''
-    TIPO : TYPE_VOID
-         | TYPE_CHAR
-         | TYPE_STRING
-         | TYPE_SHORT
-         | TYPE_INT
-         | TYPE_LONG
-         | TYPE_FLOAT
-         | TYPE_DOUBLE
-         | TYPE_BOOLEAN
+    TYPE : VOID
+         | CHAR
+         | STRING
+         | SHORT
+         | INT
+         | LONG
+         | FLOAT
+         | DOUBLE
+         | BOOLEAN
     '''
     types = {
         'nada': Types.VOID,

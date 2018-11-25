@@ -2,8 +2,8 @@
 compile:
 	python -m compileall ce tests
 
-test:
-	python ce/grammar.py tests/test.txt
+test: clean
+	python main.py -f tests/test.txt
 
 clean:
 	rm -vf ce/parser.out ce/parsetab.py

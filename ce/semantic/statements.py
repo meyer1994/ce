@@ -1,153 +1,136 @@
-from abc import ABC, abstractmethod
-
-import scope
-from lang_types import Types, NumericTypes, cast, OperationTypes
+from ce.semantic.node import Node
+from ce.types import Types, NumericTypes, cast, OperationTypes
 
 
-class Node(ABC):
-    '''
-    Base class for the nodes of the parse tree.
-    '''
-    _type = None
-
-    @abstractmethod
-    def validate(self):
-        pass
-
-    @property
-    def type(self):
-        return self._type
-
-
-class Bloco(Node):
+class Block(Node):
     def __init__(self, commands=[]):
-        super(Bloco, self).__init__()
+        super(Block, self).__init__()
         self.commands = commands
 
-    def validate(self):
-        scope.variables.create()
+    def validate(self, scope):
+        scope.create()
         for command in self.commands:
-            command.validate()
-        scope.variables.pop()
+            command.validate(scope)
+        scope.pop()
 
 
-class StatementSe(Node):
+class If(Node):
     def __init__(self, expression, block, else_block=None):
-        super(StatementSe, self).__init__()
+        super(If, self).__init__()
         self.expression = expression
         self.block = block
         self.else_block = else_block
 
-    def validate(self):
-        self.expression.validate()
+    def validate(self, scope):
+        self.expression.validate(scope)
         if self.expression.type != Types.BOOLEAN:
             error = self.expression.type
             raise Exception('If expression must be a boolean. Got %s' % error)
-        self.block.validate()
+        self.block.validate(scope)
         if self.else_block:
-            self.else_block.validate()
+            self.else_block.validate(scope)
 
 
-class StatementPara(Node):
+class For(Node):
     def __init__(self, declaration, condition, step, block):
-        super(StatementPara, self).__init__()
+        super(For, self).__init__()
         self.declaration = declaration
         self.condition = condition
         self.step = step
         self.block = block
 
-    def validate(self):
-        self.declaration.validate()
-        self.condition.validate()
+    def validate(self, scope):
+        self.declaration.validate(scope)
+        self.condition.validate(scope)
         if self.condition.type != Types.BOOLEAN:
             error = self.condition.type
             raise Exception('For loop condition be boolean. Got %s' % error)
-        self.step.validate()
-        self.block.validate()
+        self.step.validate(scope)
+        self.block.validate(scope)
 
 
-class StatementEnquanto(Node):
+class While(Node):
     def __init__(self, condition, block):
-        super(StatementEnquanto, self).__init__()
+        super(While, self).__init__()
         self.condition = condition
         self.block = block
 
-    def validate(self):
-        self.condition.validate()
+    def validate(self, scope):
+        self.condition.validate(scope)
         if self.condition.type != Types.BOOLEAN:
             error = self.condition.type
             raise Exception('While condition must be boolean. Got %s' % error)
-        self.block.validate()
+        self.block.validate(scope)
 
 
-class StatementCaso(Node):
+class Switch(Node):
     def __init__(self, value, case_blocks=[]):
-        super(StatementCaso, self).__init__()
+        super(Switch, self).__init__()
         self.value = value
         self.case_blocks = case_blocks
 
-    def validate(self):
-        self.value.validate()
+    def validate(self, scope):
+        self.value.validate(scope)
         for block in self.case_blocks:
-            block.validate()
+            block.validate(scope)
 
 
-class StatementSeja(Node):
+class Case(Node):
     def __init__(self, value, block):
-        super(StatementSeja, self).__init__()
+        super(Case, self).__init__()
         self.value = value
         self.block = block
 
-    def validate(self):
-        self.value.validate()
-        self.block.validate()
+    def validate(self, scope):
+        self.value.validate(scope)
+        self.block.validate(scope)
 
 
-class DeclaracaoVariavel(Node):
+class DeclVariable(Node):
     def __init__(self, _type, name, expression=None, dimensions=0):
-        super(DeclaracaoVariavel, self).__init__()
+        super(DeclVariable, self).__init__()
         self._type = _type
         self.name = name
         self.expression = expression
         self.dimensions = dimensions
 
-    def validate(self):
-        if self.name in scope.variables.current:
+    def validate(self, scope):
+        if self.name in scope.current:
             raise Exception('Variable "%s" already declared' % self.name)
         else:
-            scope.variables.add(self)
+            scope.add(self)
 
         if self.expression is not None:
-            self.expression.validate()
+            self.expression.validate(scope)
             cast(self.expression.type, self.type)
 
 
-class DeclaracaoFuncao(Node):
+class DeclFunction(Node):
     def __init__(self, _type, name, block, args=[]):
-        super(DeclaracaoFuncao, self).__init__()
+        super(DeclFunction, self).__init__()
         self._type = _type
         self.name = name
         self.args = args
         self.block = block
 
-    def validate(self):
-        if self.name in scope.functions:
+    def validate(self, scope):
+        if self.name in scope.current:
             raise Exception('Function %s already declared' % self.name)
         else:
-            scope.functions[self.name] = self
+            scope.current[self.name] = self
 
         self.block.commands = self.args + self.block.commands
-        self.block.validate()
+        self.block.validate(scope)
 
 
-class Variavel(Node):
+class Var(Node):
     def __init__(self, name, dimensions=0):
-        super(Variavel, self).__init__()
+        super(Var, self).__init__()
         self.name = name
         self.dimensions = dimensions
 
-    def validate(self):
-        var = scope.variables.get(self.name)
+    def validate(self, scope):
+        var = scope.get(self.name)
         if var is None:
             raise Exception('Variable "%s" not declared' % self.name)
 
@@ -156,35 +139,36 @@ class Variavel(Node):
         self._type = var.type
 
 
-class Atribuicao(Node):
+class Assign(Node):
     def __init__(self, var, operation):
-        super(Atribuicao, self).__init__()
+        super(Assign, self).__init__()
         self.var = var
         self.operation = operation
 
-    def validate(self):
-        self.var.validate()
-        self.operation.validate()
+    def validate(self, scope):
+        self.var.validate(scope)
+        self.operation.validate(scope)
         cast(self.var.type, self.operation.type)
 
 
-class ChamadaFuncao(Node):
+class Call(Node):
     def __init__(self, name, args=[]):
-        super(ChamadaFuncao, self).__init__()
+        super(Call, self).__init__()
         self.name = name
         self.args = args
 
-    def validate(self):
-        if self.name not in scope.functions:
+    def validate(self, scope):
+        val = scope.get(self.name)
+        if val is None:
             raise Exception('Function "%s" not delcared' % self.name)
-        function = scope.functions[self.name]
+        function = val
 
         if len(function.args) != len(self.args):
             error = '%d, %d' % (len(function.args), len(self.args))
             raise Exception('Number of parameters is incorrect (%s)' % error)
 
         for argument, parameter in zip(function.args, self.args):
-            parameter.validate()
+            parameter.validate(scope)
             try:
                 cast(parameter.type, argument.type)
             except Exception:
@@ -194,16 +178,16 @@ class ChamadaFuncao(Node):
                 raise Exception('Types do not match (%s)' % error)
 
 
-class OperacaoBinaria(Node):
+class OpBin(Node):
     def __init__(self, left, operation, right):
-        super(OperacaoBinaria, self).__init__()
+        super(OpBin, self).__init__()
         self.left = left
         self.operation = operation
         self.right = right
 
-    def validate(self):
-        self.left.validate()
-        self.right.validate()
+    def validate(self, scope):
+        self.left.validate(scope)
+        self.right.validate(scope)
 
         if self.operation == OperationTypes.BOOLEAN:
             self._boolean()
@@ -219,24 +203,24 @@ class OperacaoBinaria(Node):
             raise Exception('Both sides must be numeric. Got %s' % error)
 
 
-class OperacaoUnaria(Node):
+class OpUn(Node):
     def __init__(self, operation, right):
-        super(OperacaoUnaria, self).__init__()
+        super(OpUn, self).__init__()
         self.operation = operation
         self.right = right
 
-    def validate(self):
-        self.right.validate()
+    def validate(self, scope):
+        self.right.validate(scope)
         if self.right.type not in NumericTypes:
             raise Exception('Unary operation must be with numbers')
         self._type = self.right.type
 
 
-class LiteralValor(Node):
+class Literal(Node):
     def __init__(self, value, _type):
-        super(LiteralValor, self).__init__()
+        super(Literal, self).__init__()
         self.value = value
         self._type = _type
 
-    def validate(self):
+    def validate(self, scope):
         pass

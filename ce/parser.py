@@ -1,12 +1,12 @@
 import ply.yacc as yacc
 
-from semantic import Bloco, StatementSe, StatementPara, StatementEnquanto, \
-    StatementCaso, StatementSeja, DeclaracaoVariavel, DeclaracaoFuncao, \
-    Variavel, Atribuicao, ChamadaFuncao, OperacaoBinaria, OperacaoUnaria, \
-    LiteralValor
+from ce.lexer import tokens, literals  # NOQA
 
-from lang_types import Types, OperationTypes
-from lexer import tokens, literals
+from ce.semantic.statements import Block, If, For, While, Switch, Case, Call, \
+    Var, Assign, DeclVariable, DeclFunction, Literal, OpBin, OpUn
+
+from ce.types import Types, OperationTypes
+from ce.scope import Scopes
 
 
 precedence = [
@@ -31,8 +31,9 @@ def p_comeco(p):
            | empty
     '''
     if p[1] is not None:
-        b = Bloco(p[1])
-        b.validate()
+        b = Block(p[1])
+        scope = Scopes()
+        b.validate(scope)
 
 
 def p_comandos(p):
@@ -63,15 +64,15 @@ def p_declaracao_variavel(p):
                         | TIPO ID
     '''
     if len(p) == 5:
-        p[0] = DeclaracaoVariavel(p[1], p[2], p[4])
+        p[0] = DeclVariable(p[1], p[2], p[4])
     else:
-        p[0] = DeclaracaoVariavel(p[1], p[2])
+        p[0] = DeclVariable(p[1], p[2])
 
 
 def p_declaracao_variavel_array(p):
     ''' declaracao_variavel : TIPO ID array '''
     dim = len(p[3])
-    p[0] = DeclaracaoVariavel(p[1], p[2], dimensions=dim)
+    p[0] = DeclVariable(p[1], p[2], dimensions=dim)
 
 
 def p_array(p):
@@ -91,9 +92,9 @@ def p_declaracao_funcao(p):
                       | TIPO ID '(' ')' bloco
     '''
     if len(p) == 7:
-        p[0] = DeclaracaoFuncao(p[1], p[2], args=p[4], block=p[6])
+        p[0] = DeclFunction(p[1], p[2], args=p[4], block=p[6])
     else:
-        p[0] = DeclaracaoFuncao(p[1], p[2], block=p[5])
+        p[0] = DeclFunction(p[1], p[2], block=p[5])
 
 
 def p_argumentos_funcao(p):
@@ -113,23 +114,23 @@ def p_argumento(p):
               | TIPO ID array
     '''
     if len(p) == 3:
-        p[0] = DeclaracaoVariavel(p[1], p[2], dimensions=0)
+        p[0] = DeclVariable(p[1], p[2], dimensions=0)
     else:
         dim = len(p[3])
-        p[0] = DeclaracaoVariavel(p[1], p[2], dimensions=dim)
+        p[0] = DeclVariable(p[1], p[2], dimensions=dim)
 
 
 def p_atribuicao(p):
     ''' atribuicao : ID '=' operacao '''
-    var = Variavel(p[1])
-    p[0] = Atribuicao(var, p[3])
+    var = Var(p[1])
+    p[0] = Assign(var, p[3])
 
 
 def p_atribuicao_array(p):
     ''' atribuicao : ID array '=' operacao '''
     dimensions = len(p[2])
-    var = Variavel(p[1], dimensions)
-    p[0] = Atribuicao(var, p[4])
+    var = Var(p[1], dimensions)
+    p[0] = Assign(var, p[4])
 
 
 def p_bloco(p):
@@ -138,9 +139,9 @@ def p_bloco(p):
           | '{' '}'
     '''
     if len(p) == 4:
-        p[0] = Bloco(p[2])
+        p[0] = Block(p[2])
     else:
-        p[0] = Bloco()
+        p[0] = Block()
 
 
 def p_statements(p):
@@ -174,9 +175,9 @@ def p_if_statement(p):
     if_statement : STATEMENT_IF '(' operacao ')' bloco STATEMENT_ELSE bloco
     '''
     if len(p) == 6:
-        p[0] = StatementSe(p[3], p[5])
+        p[0] = If(p[3], p[5])
     else:
-        p[0] = StatementSe(p[3], p[5], p[7])
+        p[0] = If(p[3], p[5], p[7])
 
 
 def p_for_statement(p):
@@ -187,19 +188,19 @@ def p_for_statement(p):
     condition = p[5]
     step = p[7]
     block = p[9]
-    p[0] = StatementPara(declaration, condition, step, block)
+    p[0] = For(declaration, condition, step, block)
 
 
 def p_while_statement(p):
     ''' while_statement : STATEMENT_WHILE '(' operacao ')' bloco '''
-    p[0] = StatementEnquanto(p[3], p[5])
+    p[0] = While(p[3], p[5])
 
 
 def p_switch_statement(p):
     '''
     switch_statement : STATEMENT_SWITCH '(' operacao ')' '{' switch_cases '}'
     '''
-    p[0] = StatementCaso(p[3], p[6])
+    p[0] = Switch(p[3], p[6])
 
 
 def p_switch_cases(p):
@@ -208,9 +209,9 @@ def p_switch_cases(p):
                  | STATEMENT_CASE '(' operacao ')' bloco
     '''
     if len(p) == 7:
-        p[0] = p[1] + [StatementSeja(p[4], p[6])]
+        p[0] = p[1] + [Case(p[4], p[6])]
     else:
-        p[0] = [StatementSeja(p[3], p[5])]
+        p[0] = [Case(p[3], p[5])]
 
 
 def p_return_statement(p):
@@ -232,7 +233,7 @@ def p_operacao_numerica(p):
     left = p[1]
     op = OperationTypes.NUMERIC
     right = p[3]
-    p[0] = OperacaoBinaria(left, op, right)
+    p[0] = OpBin(left, op, right)
 
 
 def p_operacao_booleana(p):
@@ -247,12 +248,12 @@ def p_operacao_booleana(p):
     left = p[1]
     op = OperationTypes.BOOLEAN
     right = p[3]
-    p[0] = OperacaoBinaria(left, op, right)
+    p[0] = OpBin(left, op, right)
 
 
 def p_operacao_minus(p):
     ''' operacao : '-' operacao %prec UMINUS '''
-    p[0] = OperacaoUnaria(OperationTypes.NUMERIC, p[2])
+    p[0] = OpUn(OperationTypes.NUMERIC, p[2])
 
 
 def p_operacao_literal(p):
@@ -262,12 +263,12 @@ def p_operacao_literal(p):
 
 def p_operacao_variavel(p):
     ''' operacao : ID '''
-    p[0] = Variavel(p[1])
+    p[0] = Var(p[1])
 
 
 def p_operacao_variavel_array(p):
     ''' operacao : ID array '''
-    p[0] = Variavel(p[1], len(p[2]))
+    p[0] = Var(p[1], len(p[2]))
 
 
 def p_operacao_parenteses(p):
@@ -281,9 +282,9 @@ def p_operacao_chamada_funcao(p):
              | ID '(' ')'
     '''
     if len(p) == 5:
-        p[0] = ChamadaFuncao(p[1], p[3])
+        p[0] = Call(p[1], p[3])
     else:
-        p[0] = ChamadaFuncao(p[1])
+        p[0] = Call(p[1])
 
 
 def p_parametros(p):
@@ -325,39 +326,40 @@ def p_TIPO(p):
 
 def p_LITERAL_numerico_medio(p):
     ''' LITERAL : LITERAL_INT '''
-    p[0] = LiteralValor(p[1], Types.INT)
+    p[0] = Literal(p[1], Types.INT)
 
 
 def p_LITERAL_numerico(p):
     ''' LITERAL : LITERAL_FLOAT '''
-    p[0] = LiteralValor(p[1], Types.FLOAT)
+    p[0] = Literal(p[1], Types.FLOAT)
 
 
 def p_LITERAL_letra(p):
     ''' LITERAL : LITERAL_CHAR '''
-    p[0] = LiteralValor(p[1], Types.CHAR)
+    p[0] = Literal(p[1], Types.CHAR)
 
 
 def p_LITERAL_letras(p):
     ''' LITERAL : LITERAL_STRING '''
-    p[0] = LiteralValor(p[1], Types.STRING)
+    p[0] = Literal(p[1], Types.STRING)
 
 
 def p_LITERAL_concordo(p):
     ''' LITERAL : LITERAL_TRUE '''
-    p[0] = LiteralValor(True, Types.BOOLEAN)
+    p[0] = Literal(True, Types.BOOLEAN)
 
 
 def p_LITERAL_discordo(p):
     ''' LITERAL : LITERAL_FALSE '''
-    p[0] = LiteralValor(False, Types.BOOLEAN)
+    p[0] = Literal(False, Types.BOOLEAN)
 
 
 def p_error(p):
     print('Error at %s' % p)
 
 
-parser = yacc.yacc(debug=True)
+def create_parser():
+    return yacc.yacc(debug=True)
 
 
 #
@@ -371,4 +373,5 @@ if __name__ == '__main__':
 
     with open(args.file, 'r') as f:
         data = f.read()
+        parser = create_parser()
         parser.parse(data)

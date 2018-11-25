@@ -46,7 +46,9 @@ tokens = [
 literals = string.printable
 
 
-t_ignore_COMMENT = r'(/\*(.|\n)*?\*/)|(//.*)'
+def t_ignore_COMMENT(t):
+    r'(/\*(.|\n)*?\*/)|(//.*)'
+    t.lexer.lineno += t.value.count('\n')
 
 
 def t_ignore_newline(t):

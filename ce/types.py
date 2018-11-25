@@ -48,7 +48,7 @@ def cast(type_a, type_b):
 
     # If they are not the same, raise an error
     if len(types) != 1:
-        raise Exception('Incompatible types (%s, %s)' % (type_a, type_b))
+        raise TypeError('Incompatible types (%s, %s)' % (type_a, type_b))
 
     return types.pop()
 

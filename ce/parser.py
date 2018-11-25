@@ -5,7 +5,8 @@ from ce.lexer import tokens  # NOQA
 from ce.semantic.expressions import OpBin, OpUn
 from ce.semantic.values import Call, Var, Assign, Literal
 from ce.semantic.declarations import DeclVariable, DeclFunction
-from ce.semantic.statements import Block, If, For, While, Switch, Case
+from ce.semantic.statements import Block, If, For, While, Switch, Case, Main, \
+    Return
 
 from ce.types import Types, OperationTypes
 
@@ -32,9 +33,9 @@ def p_begin(p):
            | empty
     '''
     if p[1] is None:
-        p[0] = Block()
+        p[0] = Main()
     else:
-        p[0] = Block(p[1])
+        p[0] = Main(p[1])
 
 
 def p_commands(p):
@@ -61,7 +62,7 @@ def p_command(p):
 def p_var_declaration(p):
     '''
     var_declaration : TYPE ID '=' expression
-                         | TYPE ID
+                    | TYPE ID
     '''
     if len(p) == 5:
         p[0] = DeclVariable(p[1], p[2], p[4])
@@ -182,11 +183,7 @@ def p_for_statement(p):
     '''
     for_statement : FOR '(' var_declaration ';' expression ';' assign ')' block
     '''
-    declaration = p[3]
-    condition = p[5]
-    step = p[7]
-    block = p[9]
-    p[0] = For(declaration, condition, step, block)
+    p[0] = For(p[3], p[5], p[7], p[9])
 
 
 def p_while_statement(p):
@@ -214,7 +211,12 @@ def p_switch_cases(p):
 
 def p_return_statement(p):
     ''' return_statement : RETURN expression '''
-    p[0] = p[2]
+    p[0] = Return(p[2])
+
+
+def p_return_statement_empty(p):
+    ''' return_statement : RETURN empty '''
+    p[0] = Return()
 
 
 def p_expression_numerica(p):
@@ -356,8 +358,8 @@ def p_error(p):
     print('Error at %s' % p)
 
 
-def create_parser():
-    return yacc.yacc(debug=True)
+def create_parser(debug=True):
+    return yacc.yacc(debug=debug)
 
 
 #

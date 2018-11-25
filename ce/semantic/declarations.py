@@ -55,19 +55,15 @@ class DeclFunction(Node):
                 arg.validate(scop)
             self.block.validate(scop)
 
-    def generate(self, _, scope):
+    def generate(self, module, scope):
         args = [arg.type.value for arg in self.args]
         fnty = ir.FunctionType(self.type.value, args)
-
-        name = '%s_module' % self.name
-        module = ir.Module(name=name)
 
         func = ir.Function(module, fnty, name=self.name)
         self.function = func
         scope[self.name] = self
 
-        name = '%s_block' % self.name
-        block = func.append_basic_block(name=name)
+        block = func.append_basic_block()
 
         args = []
         for i, arg in enumerate(func.args):

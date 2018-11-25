@@ -1,8 +1,10 @@
+from contextlib import contextmanager
+
 
 class Scopes(object):
     def __init__(self):
         super(Scopes, self).__init__()
-        self.scopes = []
+        self.scopes = [{}]
 
     def create(self):
         self.scopes.append({})
@@ -23,6 +25,17 @@ class Scopes(object):
     def add(self, decl):
         self.current[decl.name] = decl
 
+    def __contains__(self, item):
+        return item.name in self.current
 
-functions = {}
-variables = Scopes()
+    def __getitem__(self, key):
+        return self.current[key]
+
+    def __setitem__(self, key, value):
+        self.current[key] = value
+
+    @contextmanager
+    def __call__(self):
+        self.create()
+        yield self
+        self.pop()

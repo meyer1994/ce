@@ -3,9 +3,9 @@ from ce.types import cast
 
 
 class DeclVariable(Node):
-    def __init__(self, _type, name, expression=None, dimensions=0):
+    def __init__(self, typ, name, expression=None, dimensions=0):
         super(DeclVariable, self).__init__()
-        self._type = _type
+        self.type = typ
         self.name = name
         self.expression = expression
         self.dimensions = dimensions
@@ -20,11 +20,16 @@ class DeclVariable(Node):
             self.expression.validate(scope)
             cast(self.expression.type, self.type)
 
+    def generate(self, builder, scope):
+        ptr = builder.alloca(self.type.value, name=self.name)
+        scope.current[self.name] = ptr
+        return ptr
+
 
 class DeclFunction(Node):
-    def __init__(self, _type, name, block, args=[]):
+    def __init__(self, typ, name, block, args=[]):
         super(DeclFunction, self).__init__()
-        self._type = _type
+        self.type = typ
         self.name = name
         self.args = args
         self.block = block

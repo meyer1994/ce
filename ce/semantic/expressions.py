@@ -15,9 +15,10 @@ class OpBin(Node):
 
         if self.operation == OperationTypes.BOOLEAN:
             self._boolean()
-            self._type = Types.BOOLEAN
+            self.type = Types.BOOLEAN
         else:
-            self._type = cast(self.left.type, self.right.type)
+            self.type = cast(self.left.type, self.right.type)
+
 
     def _boolean(self):
         left = self.left.type
@@ -37,4 +38,4 @@ class OpUn(Node):
         self.right.validate(scope)
         if self.right.type not in NumericTypes:
             raise Exception('Unary operation must be with numbers')
-        self._type = self.right.type
+        self.type = self.right.type

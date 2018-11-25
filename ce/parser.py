@@ -50,7 +50,7 @@ def p_commands(p):
 
 def p_command(p):
     '''
-    command : variable_declaration ';'
+    command : var_declaration ';'
             | assign ';'
             | expression ';'
             | declaracao_funcao
@@ -58,9 +58,9 @@ def p_command(p):
     p[0] = p[1]
 
 
-def p_variable_declaration(p):
+def p_var_declaration(p):
     '''
-    variable_declaration : TYPE ID '=' expression
+    var_declaration : TYPE ID '=' expression
                          | TYPE ID
     '''
     if len(p) == 5:
@@ -69,8 +69,8 @@ def p_variable_declaration(p):
         p[0] = DeclVariable(p[1], p[2])
 
 
-def p_variable_declaration_array(p):
-    ''' variable_declaration : TYPE ID array '''
+def p_var_declaration_array(p):
+    ''' var_declaration : TYPE ID array '''
     dim = len(p[3])
     p[0] = DeclVariable(p[1], p[2], dimensions=dim)
 
@@ -163,7 +163,7 @@ def p_statement(p):
               | switch_statement
               | expression ';'
               | assign ';'
-              | variable_declaration ';'
+              | var_declaration ';'
               | return_statement ';'
     '''
     p[0] = p[1]
@@ -182,7 +182,7 @@ def p_if_statement(p):
 
 def p_for_statement(p):
     '''
-    for_statement : FOR '(' variable_declaration ';' expression ';' assign ')' block
+    for_statement : FOR '(' var_declaration ';' expression ';' assign ')' block
     '''
     declaration = p[3]
     condition = p[5]

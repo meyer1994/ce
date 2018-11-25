@@ -10,3 +10,6 @@ clean:
 
 lint: clean
 	python -m flake8 ce
+
+debug:
+	python -m pdb main.py -f example.ce

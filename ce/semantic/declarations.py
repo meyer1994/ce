@@ -50,11 +50,10 @@ class DeclFunction(Node):
         else:
             scope.current[self.name] = self
 
-        scope.create()
-        for arg in self.args:
-            arg.validate(scope)
-        self.block.validate(scope)
-        scope.pop()
+        with scope() as scop:
+            for arg in self.args:
+                arg.validate(scop)
+            self.block.validate(scop)
 
     def generate(self, _, scope):
         args = [arg.type.value for arg in self.args]
@@ -64,7 +63,8 @@ class DeclFunction(Node):
         module = ir.Module(name=name)
 
         func = ir.Function(module, fnty, name=self.name)
-        scope[self.name] = func
+        self.function = func
+        scope[self.name] = self
 
         name = '%s_block' % self.name
         block = func.append_basic_block(name=name)

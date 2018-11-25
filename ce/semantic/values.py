@@ -47,28 +47,31 @@ class Call(Node):
 
     def validate(self, scope):
         val = scope.get(self.name)
+        # Not declared
         if val is None:
-            raise Exception('Function "%s" not delcared' % self.name)
-        function = val
+            raise LookupError('Function "%s" not delcared' % self.name)
+        self.type = val.type
 
-        if len(function.args) != len(self.args):
-            error = '%d, %d' % (len(function.args), len(self.args))
-            raise Exception('Number of parameters is incorrect (%s)' % error)
+        # Args list
+        if len(val.args) != len(self.args):
+            error = '%d, %d' % (len(val.args), len(self.args))
+            raise TypeError('Number of parameters is incorrect (%s)' % error)
 
-        for argument, parameter in zip(function.args, self.args):
+        # Compare declared with used
+        for argument, parameter in zip(val.args, self.args):
             parameter.validate(scope)
             try:
                 cast(parameter.type, argument.type)
-            except Exception:
+            except TypeError:
                 type_arg = argument.type
                 type_par = parameter.type
                 error = '%s, %s' % (type_arg, type_par)
-                raise Exception('Types do not match (%s)' % error)
+                raise TypeError('Types do not match (%s)' % error)
 
     def generate(self, builder, scope):
         func = scope.get(self.name)
         args = [a.generate(builder, scope) for a in self.args]
-        return builder.call(func, args)
+        return builder.call(func.function, args)
 
 
 class Literal(Node):

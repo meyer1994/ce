@@ -12,13 +12,13 @@ class Main(Node):
         self.commands = commands
         self.module = ir.Module()
 
-    def validate(self, scope=None):
+    def validate(self):
         scope = Scopes()
         with scope() as scop:
-            for comm in self.commands:
-                comm.validate(scop)
+            for c in self.commands:
+                c.validate(scop)
 
-    def generate(self, builder=None, scope=None):
+    def generate(self):
         scope = Scopes()
         for comm in self.commands:
             if isinstance(comm, DeclVariable):
@@ -46,7 +46,11 @@ class Block(Node):
             command.validate(scope)
 
     def generate(self, builder, scope):
-        return [c.generate(builder, scope) for c in self.commands]
+        block = builder.append_basic_block('block')
+        with builder.goto_block(block):
+            for c in self.commands:
+                c.generate(builder, scope)
+        return block
 
 
 class If(Node):

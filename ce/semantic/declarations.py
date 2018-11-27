@@ -17,20 +17,26 @@ class DeclVariable(Node):
     def validate(self, scope):
         if self.name in scope.current:
             raise Exception('Variable "%s" already declared' % self.name)
-        else:
-            scope[self.name] = self
 
-        if self.expr is not None:
-            self.expr.validate(scope)
-            cast_numeric(self.expr.type, self.type)
+        # Add itself to scope
+        scope[self.name] = self
+
+        if self.expr is None:
+            return
+        self.expr.validate(scope)
+        cast_numeric(self.expr.type, self.type)
 
     def generate(self, builder, scope):
         size = reduce(lambda x, y: x * y.value, self.dims, 1)
         ptr = builder.alloca(self.type.value, size, self.name)
-        scope.current[self.name] = ptr
+
+        # Adds itself to scope
+        scope[self.name] = ptr
 
         if self.expr is None:
             return ptr
+
+        # Proper conversions and casting
         expr = self.expr.generate(builder, scope)
         convertion = cast_code(builder, self.type, self.expr.type)
         expr = convertion(expr)
@@ -49,34 +55,44 @@ class DeclFunction(Node):
     def validate(self, scope):
         if self.name in scope.current:
             raise Exception('Function %s already declared' % self.name)
-        else:
-            scope.current[self.name] = self
 
+        # Adds itself
+        scope[self.name] = self
+
+        # Validate function block and args
         with scope() as scop:
             for arg in self.args:
                 arg.validate(scop)
             self.block.validate(scop)
 
     def generate(self, module, scope):
-        args = [arg.type.value for arg in self.args]
-        fnty = ir.FunctionType(self.type.value, args)
+        self.function = self._create_function(module)
 
-        func = ir.Function(module, fnty, name=self.name)
-        self.function = func
+        # Adds itself to scope
         scope[self.name] = self
 
-        block = func.append_basic_block()
+        # Append block
+        block = self.function.append_basic_block(self.name)
+        builder = ir.IRBuilder(block)
 
-        args = []
-        for i, arg in enumerate(func.args):
-            arg.name = self.args[i].name
-            args.append(arg)
-        func.args = tuple(args)
-
+        # Generate function body
         with scope() as scop:
-            builder = ir.IRBuilder(block)
-            for arg in self.args:
-                ptr = builder.alloca(arg.type.value)
-                scop[arg.name] = ptr
-            self.block.generate(builder, scop)
+            self._allocate_args(builder, scop)
+            gen = self.block.generate(builder, scop)
+            builder.branch(gen)
         return builder
+
+    def _allocate_args(self, builder, scope):
+        ''' Allocates the passed args of the function to the function body. '''
+        for arg, par in zip(self.args, self.function.args):
+            ptr = arg.generate(builder, scope)
+            builder.store(par, ptr)
+
+    def _create_function(self, module):
+        ''' Creates the function '''
+        # Get types
+        args = (arg.type.value for arg in self.args)
+        function_types = ir.FunctionType(self.type.value, args)
+        # Create function
+        func = ir.Function(module, function_types, name=self.name)
+        return func

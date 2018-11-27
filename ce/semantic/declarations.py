@@ -78,8 +78,10 @@ class DeclFunction(Node):
         # Generate function body
         with scope() as scop:
             self._allocate_args(builder, scop)
-            gen = self.block.generate(builder, scop)
-            builder.branch(gen)
+            body = builder.append_basic_block('body')
+            with builder.goto_block(body):
+                self.block.generate(builder, scop)
+            builder.branch(body)
         return builder
 
     def _allocate_args(self, builder, scope):

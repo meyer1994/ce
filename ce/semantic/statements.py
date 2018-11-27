@@ -46,11 +46,7 @@ class Block(Node):
             command.validate(scope)
 
     def generate(self, builder, scope):
-        block = builder.append_basic_block('block')
-        with builder.goto_block(block):
-            for c in self.commands:
-                c.generate(builder, scope)
-        return block
+        return [c.generate(builder, scope) for c in self.commands]
 
 
 class If(Node):
@@ -65,23 +61,24 @@ class If(Node):
         if self.expr.type != Types.BOOLEAN:
             error = self.expr.type
             raise Exception('Expression must be a boolean. Got %s' % error)
-
+        # if
         with scope() as scop:
             self.block.validate(scop)
-
+        # else
         with scope() as scop:
             self.else_block.validate(scope)
 
     def generate(self, builder, scope):
         expr = self.expr.generate(builder, scope)
         with builder.if_else(expr) as (then, other):
+            # if
             with then:
                 with scope() as scop:
-                    if_block = self.block.generate(builder, scop)
+                    self.block.generate(builder, scop)
+            # else
             with other:
                 with scope() as scop:
-                    else_block = self.else_block.generate(builder, scop)
-        return (if_block, else_block)
+                    return self.else_block.generate(builder, scop)
 
 
 class For(Node):
@@ -101,17 +98,24 @@ class For(Node):
 
     def generate(self, builder, scope):
         with scope() as scop:
-            self.decl.generate(builder, scop)
+            # declaration
             block = builder.append_basic_block('for')
+            with builder.goto_block(block):
+                self.decl.generate(builder, scop)
+            builder.branch(block)
+
+            # condition
+            block = builder.append_basic_block('for-if')
+            with builder.goto_block(block):
+                cond = self.cond.generate(builder, scop)
+                # body
+                with builder.if_then(cond):
+                    self.block.generate(builder, scop)
+                    builder.branch(block)
+                    # gets the next block
+                block = builder.block
             builder.position_at_start(block)
-            cond = self.cond.generate(builder, scop)
-            with builder.if_then(cond):
-                self.block.generate(builder, scop)
-                self.step.generate(builder, scop)
-                builder.branch(block)
-        block = builder.append_basic_block()
-        builder.position_at_start(block)
-        return block
+            return block
 
 
 class While(Node):
@@ -190,6 +194,7 @@ class Return(Node):
 
     def generate(self, builder, scope):
         if self.expr is None:
-            return builder.ret_void()
+            typ = builder.function.return_value.type
+            return builder.ret(typ(None))
         expr = self.expr.generate(builder, scope)
         return builder.ret(expr)

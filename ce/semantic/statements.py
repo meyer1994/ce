@@ -1,8 +1,8 @@
 from llvmlite import ir
 
-from ce.types import Types
 from ce.scope import Scopes
 from ce.semantic.node import Node
+from ce.types import Types, cast_code
 from ce.semantic.declarations import DeclVariable, DeclFunction
 
 
@@ -149,13 +149,17 @@ class While(Node):
 
 
 class Switch(Node):
-    def __init__(self, value, cases=[]):
+    def __init__(self, expr, cases=[]):
         super(Switch, self).__init__()
-        self.value = value
+        self.expr = expr
         self.cases = cases
 
     def validate(self, scope):
-        self.value.validate(scope)
+        self.expr.validate(scope)
+
+        if len(self.cases) == 0:
+            raise SyntaxError('There must be at least one case')
+
         for block in self.cases:
             block.validate(scope)
 
@@ -164,31 +168,36 @@ class Switch(Node):
             block = builder.append_basic_block('switch')
             builder.branch(block)
             builder.position_at_start(block)
+            expr = self.expr.generate(builder, scope)
 
-            value = self.value.generate(builder, scop)
-            s = builder.switch(value, None)
-            print(s)
-            # results = [c.generate(builder, scop, value) for c in self.cases]
-        return None
+            # creates blocks
+            blocks = [builder.append_basic_block('case') for _ in self.cases]
+            exit = builder.append_basic_block('switch-exit')
+            default = blocks[0]
+            switch = builder.switch(expr, default)
+            for block, case in zip(blocks, self.cases):
+                expr = case.expr.generate(builder, scop)
+                with builder.goto_block(block):
+                    case.block.generate(builder, scop)
+                    builder.branch(exit)
+                switch.add_case(expr, block)
+            builder.position_at_start(exit)
+            return exit
 
 
 class Case(Node):
-    def __init__(self, value, block):
+    def __init__(self, expr, block):
         super(Case, self).__init__()
-        self.value = value
+        self.expr = expr
         self.block = block
 
     def validate(self, scope):
-        self.value.validate(scope)
+        self.expr.validate(scope)
         with scope() as scop:
             self.block.validate(scop)
 
-    def generate(self, builder, scope, val):
-        value = self.value.generate(builder, scope)
-        cond = builder.icmp_signed('==', val, value)
-        with builder.if_then(cond):
-            with scope() as scop:
-                return self.block.generate(builder, scop)
+    def generate(self, builder, scope):
+        pass
 
 
 class Return(Node):
@@ -206,4 +215,7 @@ class Return(Node):
             typ = builder.function.return_value.type
             return builder.ret(typ(None))
         expr = self.expr.generate(builder, scope)
+        typ = Types(builder.function.return_value.type)
+        conversion = cast_code(builder, typ, self.expr.type)
+        expr = conversion(expr)
         return builder.ret(expr)

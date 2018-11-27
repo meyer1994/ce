@@ -13,7 +13,7 @@ curto arr[1][2];
 medio soma(medio a, medio d) {
 
     d = 1.1 * 5 + 2;
-    se (concordo) {
+    se (d > 2) {
 
         medio q = 1;
         // return void

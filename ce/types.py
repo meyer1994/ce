@@ -20,7 +20,6 @@ INT_TYPES = {
     Types.SHORT,
     Types.INT,
     Types.LONG,
-    # Types.BOOLEAN
 }
 
 FLOAT_TYPES = {
@@ -131,7 +130,14 @@ def cast_code(builder, type_a, type_b):
 
     # int to int
     if types <= INT_TYPES:
-        return partial(builder.trunc, typ=type_a.value)
+        if type_a == Types.SHORT:
+            return partial(builder.trunc, typ=type_a.value)
+        if type_b == Types.SHORT:
+            return partial(builder.sext, typ=type_a.value)
+        if type_b == Types.LONG:
+            return partial(builder.trunc, typ=type_a.value)
+        if type_a == Types.LONG:
+            return partial(builder.sext, typ=type_a.value)
 
     # int to float
     if type_a in FLOAT_TYPES:

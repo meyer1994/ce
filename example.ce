@@ -1,21 +1,17 @@
 
-medio fact(medio a) {
-    se (a < 2) {
-        devolve 1;
+medio cinco_seis(medio a) {
+    curto cinco = 5;
+    caso (a) {
+        seja (5) {
+            cinco = 2;
+        }
+        seja (6) {
+            cinco = 3;
+        }
     }
-
-    medio mul = 1;
-    para (medio i = 1; i <= a; i = i + 1) {
-        mul = mul * i;
-    }
-
-    devolve mul;
+    devolve cinco;
 }
 
-
-
 medio main(medio a) {
-    a = 3 * 2;
-    medio b = 10;
-    devolve fact(5);
+    devolve cinco_seis(7);
 }

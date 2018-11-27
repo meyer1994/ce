@@ -75,13 +75,15 @@ class DeclFunction(Node):
         block = self.function.append_basic_block(self.name)
         builder = ir.IRBuilder(block)
 
-        # Generate function body
         with scope() as scop:
+            # allocate parameters
             self._allocate_args(builder, scop)
-            body = builder.append_basic_block('body')
-            with builder.goto_block(body):
+
+            # generate body
+            block = builder.append_basic_block('body')
+            builder.branch(block)
+            with builder.goto_block(block):
                 self.block.generate(builder, scop)
-            builder.branch(body)
         return builder
 
     def _allocate_args(self, builder, scope):

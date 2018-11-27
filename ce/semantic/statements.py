@@ -78,7 +78,8 @@ class If(Node):
             # else
             with other:
                 with scope() as scop:
-                    return self.else_block.generate(builder, scop)
+                    self.else_block.generate(builder, scop)
+        return builder.block
 
 
 class For(Node):
@@ -99,7 +100,7 @@ class For(Node):
     def generate(self, builder, scope):
         with scope() as scop:
             # declaration
-            block = builder.append_basic_block('for')
+            block = builder.append_basic_block('for-decl')
             builder.branch(block)
             with builder.goto_block(block):
                 self.decl.generate(builder, scop)
@@ -115,11 +116,9 @@ class For(Node):
                     self.block.generate(builder, scop)
                     self.step.generate(builder, scop)
                     builder.branch(block)
-                # gets the next block
                 block = builder.block
-            # go to the start of the next block
-            builder.position_at_start(block)
-            return block
+        builder.position_at_start(block)
+        return builder.block
 
 
 class While(Node):
@@ -138,15 +137,16 @@ class While(Node):
 
     def generate(self, builder, scope):
         block = builder.append_basic_block('while')
-        builder.position_at_start(block)
-        cond = self.cond.generate(builder, scope)
-        with scope() as scop:
-            with builder.if_then(cond):
-                self.block.generate(builder, scop)
-                builder.branch(block)
-        block = builder.append_basic_block()
-        builder.position_at_start(block)
-        return block
+        builder.branch(block)
+        # condition
+        with builder.goto_block(block):
+            cond = self.cond.generate(builder, scope)
+            with scope() as scop:
+                # body
+                with builder.if_then(cond):
+                    self.block.generate(builder, scop)
+                    print(builder.block)
+            return block
 
 
 class Switch(Node):

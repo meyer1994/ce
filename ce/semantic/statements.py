@@ -102,23 +102,21 @@ class For(Node):
             # declaration
             block = builder.append_basic_block('for-decl')
             builder.branch(block)
-            with builder.goto_block(block):
-                self.decl.generate(builder, scop)
-            builder.position_at_end(block)
+            builder.position_at_start(block)
+            self.decl.generate(builder, scop)
 
             # condition
             block = builder.append_basic_block('for-if')
             builder.branch(block)
-            with builder.goto_block(block):
-                cond = self.cond.generate(builder, scop)
-                # body
-                with builder.if_then(cond):
-                    self.block.generate(builder, scop)
-                    self.step.generate(builder, scop)
-                    builder.branch(block)
-                block = builder.block
-        builder.position_at_start(block)
-        return block
+            builder.position_at_start(block)
+            cond = self.cond.generate(builder, scop)
+
+            # body
+            with builder.if_then(cond):
+                self.block.generate(builder, scop)
+                self.step.generate(builder, scop)
+                builder.branch(block)
+        return builder.block
 
 
 class While(Node):
@@ -138,16 +136,15 @@ class While(Node):
     def generate(self, builder, scope):
         block = builder.append_basic_block('while')
         builder.branch(block)
+        builder.position_at_start(block)
         with scope() as scop:
             # condition
-            with builder.goto_block(block):
-                cond = self.cond.generate(builder, scope)
-                # body
-                with builder.if_then(cond):
-                    self.block.generate(builder, scop)
-                    builder.branch(block)
-                block = builder.block
-        builder.position_at_start(block)
+            cond = self.cond.generate(builder, scope)
+            # body
+            with builder.if_then(cond):
+                self.block.generate(builder, scop)
+                builder.branch(block)
+            block = builder.block
         return block
 
 
@@ -164,9 +161,15 @@ class Switch(Node):
 
     def generate(self, builder, scope):
         with scope() as scop:
+            block = builder.append_basic_block('switch')
+            builder.branch(block)
+            builder.position_at_start(block)
+
             value = self.value.generate(builder, scop)
-            results = [c.generate(builder, scop, value) for c in self.cases]
-        return results
+            s = builder.switch(value, None)
+            print(s)
+            # results = [c.generate(builder, scop, value) for c in self.cases]
+        return None
 
 
 class Case(Node):

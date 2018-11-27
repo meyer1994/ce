@@ -5,14 +5,14 @@ medio fact(medio a) {
     }
 
     medio mul = 1;
-    medio i = 1;
-    enquanto (i <= a) {
+    para (medio i = 1; i <= a; i = i + 1) {
         mul = mul * i;
-        i = i + 1;
     }
 
     devolve mul;
 }
+
+
 
 medio main(medio a) {
     a = 3 * 2;

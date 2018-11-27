@@ -1,60 +1,10 @@
 
-medio a = 1;
-flutua b = 2.1;
-letra c = 'c';
-letras s = "abc";
-
-curto arr[1][2];
-// arr[1][2][3]; // erro: mais dimensoes
-
-// medio d = 'a'; // erro: tipos diferentes
-// letra d = 1; // erro: tipos diferentes
-
-medio soma(medio a, medio d) {
-
-    d = 1.1 * 5 + 2;
-    se (d > 2) {
-
-        medio q = 1;
-        // return void
-        devolve;
-    }
-
-    // se (b + 0) {  // erro: operacao nao retorna booleana
-    se (b < 0.1) {
-
-        // q = 2; // erro: nao declarado
-        devolve 0;
-    } senao {
-        devolve a + d;
-    }
+medio soma(medio a, medio b) {
+    devolve a + b;
 }
 
-comprido outra_soma(comprido a, comprido b) {
-    // q = 1; // erro: nao delcarado
-    // devolve soma2(-a, b); // erro: soma2 não declarada
-    enquanto (concordo) {
-        soma(1, 2);
-    }
-    devolve outra_soma(-a, b);
-}
-
-
-nada loop(medio a) {
-    para (medio i = 0; i < a; i = i + 2) {
-        // algo
-        i = i + 2;
-        a = i;
-        // outra_soma(a, 'a'); // erro: tipagem errada
-        // outra_soma(a, 2, 2); // erro: quantidade de parametros errada
-    }
-
-    // switch
-    caso (a) {
-        seja (1) {
-            devolve;
-        }
-        seja(2) {}
-        seja(3) {}
-    }
+medio main(medio a) {
+    a = 3 * 2;
+    medio b = 10;
+    devolve soma(a, b);
 }

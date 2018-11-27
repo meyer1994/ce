@@ -12,7 +12,6 @@ class Var(Node):
         var = scope.get(self.name)
         if var is None:
             raise Exception('Variable "%s" not declared' % self.name)
-
         if len(var.dims) < len(self.dims):
             raise Exception('Trying to access bigger array dimensions')
         self.type = var.type
@@ -48,32 +47,35 @@ class Call(Node):
         self.args = args
 
     def validate(self, scope):
-        val = scope.get(self.name)
-        # Not declared
-        if val is None:
+        function = scope.get(self.name)
+        if function is None:
             raise LookupError('Function "%s" not delcared' % self.name)
-        self.type = val.type
-
-        # Args list
-        if len(val.args) != len(self.args):
-            error = '%d, %d' % (len(val.args), len(self.args))
-            raise TypeError('Number of parameters is incorrect (%s)' % error)
-
-        # Compare declared with used
-        for argument, parameter in zip(val.args, self.args):
-            parameter.validate(scope)
-            try:
-                cast_numeric(parameter.type, argument.type)
-            except TypeError:
-                type_arg = argument.type
-                type_par = parameter.type
-                error = '%s, %s' % (type_arg, type_par)
-                raise TypeError('Types do not match (%s)' % error)
+        self.type = function.type
+        self.function = function
+        self._check_args_list(scope)
 
     def generate(self, builder, scope):
         func = scope.get(self.name)
         args = [a.generate(builder, scope) for a in self.args]
         return builder.call(func.function, args)
+
+    def _check_args_list(self, scope):
+        ''' Checks if the argument list passed matches '''
+        stored = self.function.args
+        passed = self.args
+        # Checks size
+        if len(stored) != len(passed):
+            error = '%d and %d' % (len(stored), len(passed))
+            raise TypeError('Number of parameters is incorrect (%s)' % error)
+
+        # Check types
+        for stor, passd in zip(stored, passed):
+            passd.validate(scope)
+            try:
+                cast_numeric(passd.type, stor.type)
+            except TypeError:
+                error = '%s, %s' % (stor.type, passd.type)
+                raise TypeError('Types do not match (%s)' % error)
 
 
 class Literal(Node):

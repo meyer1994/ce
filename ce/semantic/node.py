@@ -9,6 +9,7 @@ class Node(ABC):
     def validate(self, scope):
         pass
 
+    @abstractmethod
     def generate(self, builder, scope):
         pass
 

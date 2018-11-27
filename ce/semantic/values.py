@@ -1,5 +1,5 @@
 from ce.semantic.node import Node
-from ce.types import cast
+from ce.types import cast_numeric, cast_code
 
 
 class Var(Node):
@@ -31,11 +31,13 @@ class Assign(Node):
     def validate(self, scope):
         self.var.validate(scope)
         self.expr.validate(scope)
-        cast(self.var.type, self.expr.type)
+        cast_numeric(self.var.type, self.expr.type)
 
     def generate(self, builder, scope):
         ptr = scope.get(self.var.name)
         expr = self.expr.generate(builder, scope)
+        conversion = cast_code(builder, self.var.type, self.expr.type)
+        expr = conversion(expr)
         return builder.store(expr, ptr)
 
 
@@ -61,7 +63,7 @@ class Call(Node):
         for argument, parameter in zip(val.args, self.args):
             parameter.validate(scope)
             try:
-                cast(parameter.type, argument.type)
+                cast_numeric(parameter.type, argument.type)
             except TypeError:
                 type_arg = argument.type
                 type_par = parameter.type

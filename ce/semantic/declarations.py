@@ -3,7 +3,7 @@ from functools import reduce
 from llvmlite import ir
 
 from ce.semantic.node import Node
-from ce.types import cast
+from ce.types import cast_numeric, cast_code
 
 
 class DeclVariable(Node):
@@ -22,7 +22,7 @@ class DeclVariable(Node):
 
         if self.expr is not None:
             self.expr.validate(scope)
-            cast(self.expr.type, self.type)
+            cast_numeric(self.expr.type, self.type)
 
     def generate(self, builder, scope):
         size = reduce(lambda x, y: x * y.value, self.dims, 1)
@@ -32,6 +32,8 @@ class DeclVariable(Node):
         if self.expr is None:
             return ptr
         expr = self.expr.generate(builder, scope)
+        convertion = cast_code(builder, self.type, self.expr.type)
+        expr = convertion(expr)
         builder.store(expr, ptr)
         return ptr
 

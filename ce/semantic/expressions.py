@@ -1,34 +1,43 @@
 from ce.semantic.node import Node
-from ce.types import OperationTypes, NumericTypes, Types, cast
+from ce.types import Types, cast_code, cast_numeric, get_operation, \
+    NUMERIC_TYPES, BOOLEAN_OPS
 
 
 class OpBin(Node):
-    def __init__(self, left, operation, right):
+    def __init__(self, left, op, right):
         super(OpBin, self).__init__()
         self.left = left
-        self.operation = operation
+        self.op = op
         self.right = right
 
     def validate(self, scope):
         self.left.validate(scope)
         self.right.validate(scope)
 
-        if self.operation == OperationTypes.BOOLEAN:
+        if self.op in BOOLEAN_OPS:
             self._boolean()
             self.type = Types.BOOLEAN
         else:
-            self.type = cast(self.left.type, self.right.type)
+            self.type = cast_numeric(self.left.type, self.right.type)
 
     def generate(self, builder, scope):
         left = self.left.generate(builder, scope)
         right = self.right.generate(builder, scope)
-        return builder.add(left, right)
+
+        # cast to values
+        convertion = cast_code(builder, self.type, self.left.type)
+        left = convertion(left)
+        convertion = cast_code(builder, self.type, self.right.type)
+        right = convertion(right)
+
+        operation = get_operation(builder, self.op, self.type)
+        return operation(left, right)
 
     def _boolean(self):
         left = self.left.type
         right = self.right.type
-        if not (left in NumericTypes and right in NumericTypes):
-            error = '(%s, %s)' % (left, right)
+        if left not in NUMERIC_TYPES and right not in NUMERIC_TYPES:
+            error = '%s and %s' % (left.name, right.name)
             raise Exception('Both sides must be numeric. Got %s' % error)
 
 
@@ -40,7 +49,7 @@ class OpUn(Node):
 
     def validate(self, scope):
         self.right.validate(scope)
-        if self.right.type not in NumericTypes:
+        if self.right.type not in NUMERIC_TYPES:
             raise Exception('Unary operation must be with numbers')
         self.type = self.right.type
 

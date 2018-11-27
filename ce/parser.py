@@ -8,7 +8,7 @@ from ce.semantic.declarations import DeclVariable, DeclFunction
 from ce.semantic.statements import Block, If, For, While, Switch, Case, Main, \
     Return
 
-from ce.types import Types, OperationTypes
+from ce.types import Types, OpTypes
 
 
 precedence = [
@@ -229,31 +229,22 @@ def p_expression_numerica(p):
                | expression '&' expression
                | expression '^' expression
                | expression '|' expression
-    '''
-    left = p[1]
-    op = OperationTypes.NUMERIC
-    right = p[3]
-    p[0] = OpBin(left, op, right)
-
-
-def p_expression_boolean(p):
-    '''
-    expression : expression '>' expression
                | expression '<' expression
+               | expression '>' expression
                | expression OP_GE expression
                | expression OP_LE expression
                | expression OP_EQ expression
                | expression OP_NE expression
     '''
     left = p[1]
-    op = OperationTypes.BOOLEAN
+    op = OpTypes(p[2])
     right = p[3]
     p[0] = OpBin(left, op, right)
 
 
 def p_expression_minus(p):
     ''' expression : '-' expression %prec UMINUS '''
-    p[0] = OpUn(OperationTypes.NUMERIC, p[2])
+    p[0] = OpUn(OpTypes.SUB, p[2])
 
 
 def p_expression_literal(p):

@@ -20,7 +20,7 @@ INT_TYPES = {
     Types.SHORT,
     Types.INT,
     Types.LONG,
-    Types.BOOLEAN
+    # Types.BOOLEAN
 }
 
 FLOAT_TYPES = {

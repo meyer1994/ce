@@ -25,9 +25,10 @@ class OpBin(Node):
         right = self.right.generate(builder, scope)
 
         # cast to values
-        convertion = cast_code(builder, self.type, self.left.type)
+        typ = cast_numeric(self.left.type, self.right.type)
+        convertion = cast_code(builder, typ, self.left.type)
         left = convertion(left)
-        convertion = cast_code(builder, self.type, self.right.type)
+        convertion = cast_code(builder, typ, self.right.type)
         right = convertion(right)
 
         operation = get_operation(builder, self.op, self.type)

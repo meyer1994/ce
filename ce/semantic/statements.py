@@ -100,20 +100,24 @@ class For(Node):
         with scope() as scop:
             # declaration
             block = builder.append_basic_block('for')
+            builder.branch(block)
             with builder.goto_block(block):
                 self.decl.generate(builder, scop)
-            builder.branch(block)
+            builder.position_at_end(block)
 
             # condition
             block = builder.append_basic_block('for-if')
+            builder.branch(block)
             with builder.goto_block(block):
                 cond = self.cond.generate(builder, scop)
                 # body
                 with builder.if_then(cond):
                     self.block.generate(builder, scop)
+                    self.step.generate(builder, scop)
                     builder.branch(block)
-                    # gets the next block
+                # gets the next block
                 block = builder.block
+            # go to the start of the next block
             builder.position_at_start(block)
             return block
 

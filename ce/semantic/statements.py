@@ -118,7 +118,7 @@ class For(Node):
                     builder.branch(block)
                 block = builder.block
         builder.position_at_start(block)
-        return builder.block
+        return block
 
 
 class While(Node):
@@ -138,15 +138,17 @@ class While(Node):
     def generate(self, builder, scope):
         block = builder.append_basic_block('while')
         builder.branch(block)
-        # condition
-        with builder.goto_block(block):
-            cond = self.cond.generate(builder, scope)
-            with scope() as scop:
+        with scope() as scop:
+            # condition
+            with builder.goto_block(block):
+                cond = self.cond.generate(builder, scope)
                 # body
                 with builder.if_then(cond):
                     self.block.generate(builder, scop)
-                    print(builder.block)
-            return block
+                    builder.branch(block)
+                block = builder.block
+        builder.position_at_start(block)
+        return block
 
 
 class Switch(Node):

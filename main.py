@@ -1,7 +1,4 @@
 from argparse import ArgumentParser
-from ctypes import CFUNCTYPE, c_int32, c_int64
-
-import llvmlite.binding as llvm
 
 from ce.parser import create_parser
 

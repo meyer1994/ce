@@ -8,7 +8,7 @@ clean:
 	rm -vf out.txt* out.* a.out
 
 lint: clean
-	python -m flake8 ce
+	python -m flake8 ce main.py
 
 debug:
 	python -m pdb main.py -f example.ce

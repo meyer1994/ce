@@ -1,15 +1,11 @@
-
 compile:
-	python main.py -f example.ce | tail -n +4 | tee out.txt
-	llc out.txt -filetype=obj
-	gcc -o t out.txt.o
-
-test: clean
-	python main.py -f example.ce
+	python main.py -f example.ce | tee out.ir
+	llc out.ir -o out.o -filetype=obj
+	gcc out.o
 
 clean:
 	rm -vf ce/parser.out ce/parsetab.py
-	rm -vf out.txt* t
+	rm -vf out.txt* out.* a.out
 
 lint: clean
 	python -m flake8 ce

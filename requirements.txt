@@ -1,4 +1,4 @@
-coverage==5.3.1
+coverage==5.4
 flake8==3.8.4
 llvmlite==0.35.0
 mccabe==0.6.1

@@ -3,5 +3,5 @@ flake8==3.8.4
 llvmlite==0.36.0
 mccabe==0.6.1
 ply==3.11
-pycodestyle==2.6.0
+pycodestyle==2.7.0
 pyflakes==2.3.0

@@ -1,6 +1,6 @@
 coverage==6.2
 flake8==4.0.1
-llvmlite==0.37.0
+llvmlite==0.38.0
 mccabe==0.6.1
 ply==3.11
 pycodestyle==2.8.0

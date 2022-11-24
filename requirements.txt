@@ -1,5 +1,5 @@
 coverage==6.5.0
-flake8==5.0.4
+flake8==6.0.0
 llvmlite==0.39.1
 mccabe==0.7.0
 ply==3.11
